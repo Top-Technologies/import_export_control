@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="import_export_control.Dashboard">
+        <div class="o_action o_ie_action">
+        <Layout className="'o_ie_dashboard'" display="display">
+            <t t-set-slot="layout-actions">
+                <div class="o_ie_dates">
+                    <span class="o_ie_dates_label"><i class="fa fa-calendar"/> Period</span>
+                    <input type="date" class="o_input" t-model="state.dateFrom" t-on-change="load" aria-label="From"/>
+                    <span class="o_ie_dates_sep">–</span>
+                    <input type="date" class="o_input" t-model="state.dateTo" t-on-change="load" aria-label="To"/>
+                </div>
+            </t>
+            <div t-attf-class="o_ie_dashboard_body {{ state.loading ? 'o_ie_is_loading' : '' }}">
+                <div t-if="state.loading" class="o_ie_loading">
+                    <div class="o_ie_spinner"/>
+                    <span>Loading dashboard…</span>
+                </div>
+
+                <header class="o_ie_hero">
+                    <div class="o_ie_hero_overlay">
+                        <div class="o_ie_hero_text">
+                            <h1 class="o_ie_hero_title">Import &amp; Export Control</h1>
+                            <p class="o_ie_hero_subtitle">Operational performance and compliance at a glance</p>
+                        </div>
+                        <div class="o_ie_hero_meta">
+                            <span class="o_ie_hero_date">
+                                <i class="fa fa-clock-o"/>
+                                <t t-if="state.dateFrom or state.dateTo" t-esc="state.dateFrom or '…'"/>
+                                <t t-if="state.dateFrom or state.dateTo"> – </t>
+                                <t t-if="state.dateFrom or state.dateTo" t-esc="state.dateTo or '…'"/>
+                                <t t-if="!(state.dateFrom or state.dateTo)">All dates</t>
+                            </span>
+                            <span class="o_ie_hero_company" t-esc="state.data.company_name or ''"/>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="o_ie_summary_strip">
+                    <button t-foreach="summaryCards" t-as="card" t-key="card.key" type="button"
+                            t-attf-class="o_ie_summary_card o_ie_summary_{{ card.tone }}"
+                            t-on-click="() => this.openRecord(card)">
+                        <span class="o_ie_summary_icon"><i t-attf-class="fa {{ card.icon }}"/></span>
+                        <span class="o_ie_summary_copy">
+                            <span class="o_ie_summary_value" t-esc="formatSummaryValue(card)"/>
+                            <span class="o_ie_summary_label" t-esc="card.label"/>
+                        </span>
+                        <span t-if="card.badge" t-attf-class="o_ie_summary_badge {{ summaryBadgeClass(card) }}"
+                              t-esc="card.badge"/>
+                    </button>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-xxl-6">
+                        <t t-call="import_export_control.DashboardPanel">
+                            <t t-set="title">Import</t>
+                            <t t-set="icon" t-value="'fa-sign-in'"/>
+                            <t t-set="tone" t-value="'o_ie_tone_import'"/>
+                            <t t-set="cards" t-value="importCards"/>
+                        </t>
+                    </div>
+                    <div class="col-12 col-xxl-6">
+                        <t t-call="import_export_control.DashboardPanel">
+                            <t t-set="title">Export</t>
+                            <t t-set="icon" t-value="'fa-sign-out'"/>
+                            <t t-set="tone" t-value="'o_ie_tone_export'"/>
+                            <t t-set="cards" t-value="exportCards"/>
+                        </t>
+                    </div>
+                    <div class="col-12">
+                        <t t-call="import_export_control.DashboardPanel">
+                            <t t-set="title">Operations</t>
+                            <t t-set="icon" t-value="'fa-truck'"/>
+                            <t t-set="tone" t-value="'o_ie_tone_ops'"/>
+                            <t t-set="cards" t-value="operationCards"/>
+                        </t>
+                    </div>
+                </div>
+
+                <h3 class="o_ie_section_title"><span class="o_ie_section_bar"/>Analysis</h3>
+                <div class="row g-3">
+                    <div class="col-12 col-lg-6 col-xxl-4" t-foreach="charts" t-as="chart" t-key="chart.key">
+                        <IeChart title="chart.title" type="chart.type" labels="chart.labels"
+                                 datasets="chart.datasets" colors="chart.colors or []"
+                                 monetary="chart.monetary or false" horizontal="chart.horizontal or false"
+                                 currencyId="state.data.currency_id or 0" clickable="chart.clickable or false"
+                                 onSelect="chart.onSelect or (() => {})"/>
+                    </div>
+                </div>
+
+                <h3 class="o_ie_section_title"><span class="o_ie_section_bar"/>Control &amp; Compliance</h3>
+                <section class="o_ie_panel o_ie_tone_compliance o_ie_compliance_panel">
+                    <header class="o_ie_panel_header">
+                        <span class="o_ie_panel_mark"><i class="fa fa-balance-scale" title="Compliance"/></span>
+                        <span>Today's KPIs</span>
+                        <span class="o_ie_summary">
+                            <span class="badge rounded-pill text-bg-success">
+                                <t t-esc="complianceSummary.green"/> On target
+                            </span>
+                            <span class="badge rounded-pill text-bg-warning">
+                                <t t-esc="complianceSummary.amber"/> Watch
+                            </span>
+                            <span class="badge rounded-pill text-bg-danger">
+                                <t t-esc="complianceSummary.red"/> Off target
+                            </span>
+                        </span>
+                        <button type="button" class="btn btn-secondary btn-sm ms-auto" t-on-click="openHistory">
+                            KPI history
+                        </button>
+                    </header>
+                    <div t-if="!complianceRows.length" class="o_ie_empty text-muted">
+                        <i class="fa fa-inbox"/>
+                        <p>No compliance snapshot for today.</p>
+                    </div>
+                    <button t-foreach="complianceRows" t-as="row" t-key="row.code" type="button"
+                            t-attf-class="o_ie_kpi o_ie_kpi_{{ statusClass(row.status) }}"
+                            t-on-click="() => this.openCompliance(row)">
+                        <span class="o_ie_kpi_name" t-esc="row.name"/>
+                        <span class="o_ie_kpi_value">
+                            <strong t-esc="formatKpi(row)"/>
+                            <small class="text-muted" t-esc="formatTarget(row)"/>
+                        </span>
+                        <span class="progress o_ie_kpi_bar" role="progressbar"
+                              t-att-aria-valuenow="kpiWidth(row)" aria-valuemin="0" aria-valuemax="100">
+                            <span class="progress-bar" t-attf-class="bg-{{ statusClass(row.status) }}"
+                                  t-attf-style="width: {{ kpiWidth(row) }}%"/>
+                        </span>
+                        <span t-attf-class="badge rounded-pill text-bg-{{ statusClass(row.status) }}"
+                              t-esc="statusLabel(row.status)"/>
+                    </button>
+                </section>
+            </div>
+        </Layout>
+        </div>
+    </t>
+
+    <t t-name="import_export_control.DashboardChart">
+        <section class="o_ie_panel o_ie_chart_panel h-100">
+            <header class="o_ie_panel_header o_ie_chart_header">
+                <span class="o_ie_panel_mark">
+                    <i t-if="props.type === 'bar'" class="fa fa-bar-chart"/>
+                    <i t-else="" class="fa fa-pie-chart"/>
+                </span>
+                <span t-esc="props.title"/>
+            </header>
+            <div class="o_ie_chart_body">
+                <div t-if="!hasData" class="o_ie_empty text-muted">
+                    <i class="fa fa-folder-open-o"/>
+                    <p>No data for this period.</p>
+                </div>
+                <div t-else="" class="o_ie_chart_canvas">
+                    <canvas t-ref="canvas"/>
+                </div>
+            </div>
+        </section>
+    </t>
+
+    <t t-name="import_export_control.DashboardPanel">
+        <section t-attf-class="o_ie_panel h-100 {{ tone or '' }}">
+            <header class="o_ie_panel_header">
+                <span class="o_ie_panel_mark"><i t-attf-class="fa {{ icon }}"/></span>
+                <span t-esc="title"/>
+            </header>
+            <div class="o_ie_stats">
+                <button t-foreach="cards" t-as="card" t-key="card.key" type="button" class="o_ie_stat"
+                        t-on-click="() => this.openRecord(card)">
+                    <span class="o_ie_stat_icon"><i t-attf-class="fa {{ card.icon }}"/></span>
+                    <span class="o_ie_stat_copy">
+                        <span class="o_ie_stat_value" t-esc="formatValue(card)"/>
+                        <span class="o_ie_stat_label" t-esc="card.label"/>
+                    </span>
+                </button>
+            </div>
+        </section>
+    </t>
+</templates>

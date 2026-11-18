@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Demo files skip function tags on upgrade. These calls live in data
+         so the stage orders are created the next time the module is updated.
+         Both loaders skip orders that already exist. -->
+    <function model="ie.import.order" name="_ie_load_demo_orders"/>
+    <function model="ie.export.order" name="_ie_load_demo_orders"/>
+    <function model="ie.compliance.kpi" name="_ie_load_demo_figures"/>
+    <function model="ie.dollar.balance" name="_ie_load_demo_ahadu"/>
+    <function model="ie.import.order" name="_ie_load_demo_cost_orders"/>
+    <function model="ie.export.order" name="_ie_load_demo_payments"/>
+    <function model="ie.export.order" name="_ie_load_demo_proceeds"/>
+    <function model="ie.import.order" name="_ie_load_missing_letters_of_credit"/>
+    <function model="ie.import.order" name="_ie_load_demo_analytic"/>
+    <function model="ie.export.order" name="_ie_load_export_references"/>
+    <function model="ie.export.order" name="_ie_load_demo_export_analytic"/>
+</odoo>

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ie_business_unit_view_list" model="ir.ui.view">
+        <field name="name">ie.business.unit.list</field>
+        <field name="model">ie.business.unit</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="warehouse_id"/>
+                <field name="budget_amount"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+    <record id="ie_business_unit_view_form" model="ir.ui.view">
+        <field name="name">ie.business.unit.form</field>
+        <field name="model">ie.business.unit</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="warehouse_id"/>
+                        <field name="budget_amount"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="active"/>
+                    </group>
+                    <field name="note"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_ie_business_unit" model="ir.actions.act_window">
+        <field name="name">Business Units</field>
+        <field name="res_model">ie.business.unit</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="ie_department_view_list" model="ir.ui.view">
+        <field name="name">ie.department.list</field>
+        <field name="model">ie.department</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="business_unit_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+    <record id="ie_department_view_form" model="ir.ui.view">
+        <field name="name">ie.department.form</field>
+        <field name="model">ie.department</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="business_unit_id"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_ie_department" model="ir.actions.act_window">
+        <field name="name">Departments</field>
+        <field name="res_model">ie.department</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="ie_import_category_view_list" model="ir.ui.view">
+        <field name="name">ie.import.category.list</field>
+        <field name="model">ie.import.category</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_ie_import_category" model="ir.actions.act_window">
+        <field name="name">Import Categories</field>
+        <field name="res_model">ie.import.category</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="ie_hs_code_view_list" model="ir.ui.view">
+        <field name="name">ie.hs.code.list</field>
+        <field name="model">ie.hs.code</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+    <record id="ie_hs_code_view_form" model="ir.ui.view">
+        <field name="name">ie.hs.code.form</field>
+        <field name="model">ie.hs.code</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_ie_hs_code" model="ir.actions.act_window">
+        <field name="name">HS Codes</field>
+        <field name="res_model">ie.hs.code</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="ie_document_type_view_list" model="ir.ui.view">
+        <field name="name">ie.document.type.list</field>
+        <field name="model">ie.document.type</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="order_type"/>
+                <field name="blocking_state"/>
+                <field name="required"/>
+            </list>
+        </field>
+    </record>
+    <record id="ie_document_type_view_form" model="ir.ui.view">
+        <field name="name">ie.document.type.form</field>
+        <field name="model">ie.document.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="order_type"/>
+                        <field name="blocking_state"/>
+                        <field name="required"/>
+                        <field name="sequence"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_ie_document_type" model="ir.actions.act_window">
+        <field name="name">Document Requirements</field>
+        <field name="res_model">ie.document.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="ie_quality_template_view_form" model="ir.ui.view">
+        <field name="name">ie.quality.template.form</field>
+        <field name="model">ie.quality.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                    </group>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="min_value"/>
+                            <field name="max_value"/>
+                            <field name="uom"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="ie_quality_template_view_list" model="ir.ui.view">
+        <field name="name">ie.quality.template.list</field>
+        <field name="model">ie.quality.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_ie_quality_template" model="ir.actions.act_window">
+        <field name="name">Quality Templates</field>
+        <field name="res_model">ie.quality.template</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="ie_approval_stage_view_list" model="ir.ui.view">
+        <field name="name">ie.approval.stage.list</field>
+        <field name="model">ie.approval.stage</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="order_type"/>
+                <field name="name"/>
+                <field name="state_code"/>
+                <field name="category_id"/>
+                <field name="business_unit_id"/>
+                <field name="min_amount"/>
+                <field name="max_amount"/>
+                <field name="approver_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+    <record id="ie_approval_stage_view_form" model="ir.ui.view">
+        <field name="name">ie.approval.stage.form</field>
+        <field name="model">ie.approval.stage</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="order_type"/>
+                        <field name="state_code"/>
+                        <field name="category_id"/>
+                        <field name="business_unit_id"/>
+                        <field name="currency_id"/>
+                        <field name="min_amount"/>
+                        <field name="max_amount"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="approver_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_ie_approval_stage" model="ir.actions.act_window">
+        <field name="name">Approval Stages</field>
+        <field name="res_model">ie.approval.stage</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

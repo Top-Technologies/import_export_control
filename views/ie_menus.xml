@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ie_root" name="Import &amp; Export" sequence="25" web_icon="import_export_control,static/description/icon.png" groups="import_export_control.group_ie_officer,import_export_control.group_ie_procurement,import_export_control.group_ie_finance,import_export_control.group_ie_warehouse,import_export_control.group_ie_quality,import_export_control.group_ie_compliance,import_export_control.group_ie_management,import_export_control.group_ie_auditor,import_export_control.group_ie_admin"/>
+    <menuitem id="menu_ie_dashboard" name="Dashboard" parent="menu_ie_root" action="action_ie_master_dashboard" sequence="1" groups="import_export_control.group_ie_compliance,import_export_control.group_ie_management,import_export_control.group_ie_auditor"/>
+    <menuitem id="menu_ie_dollar_balance" name="Dollar Balance" parent="menu_ie_root" action="action_ie_dollar_balance" sequence="5" groups="import_export_control.group_ie_officer,import_export_control.group_ie_finance,import_export_control.group_ie_management,import_export_control.group_ie_auditor"/>
+    <menuitem id="menu_ie_orders" name="Orders" parent="menu_ie_root" sequence="10"/>
+    <menuitem id="menu_ie_import_orders" name="Import Orders" parent="menu_ie_orders" action="action_ie_import_order" sequence="10"/>
+    <menuitem id="menu_ie_export_orders" name="Export Orders" parent="menu_ie_orders" action="action_ie_export_order" sequence="20"/>
+    <menuitem id="menu_ie_export_opportunity" name="Export Opportunities" parent="menu_ie_orders" action="action_ie_export_opportunity" sequence="25"/>
+    <menuitem id="menu_ie_stock_balance" name="Export Stock Balance" parent="menu_ie_orders" action="action_ie_stock_balance" sequence="30"/>
+    <menuitem id="menu_ie_operations" name="Operations" parent="menu_ie_root" sequence="20"/>
+    <menuitem id="menu_ie_lc" name="Letters of Credit" parent="menu_ie_operations" action="action_ie_lc"/>
+    <menuitem id="menu_ie_shipment" name="Shipments" parent="menu_ie_operations" action="action_ie_shipment"/>
+    <menuitem id="menu_ie_customs" name="Customs" parent="menu_ie_operations" action="action_ie_customs"/>
+    <menuitem id="menu_ie_proceeds" name="Export Proceeds" parent="menu_ie_operations" action="action_ie_proceeds"/>
+    <menuitem id="menu_ie_compliance" name="Compliance" parent="menu_ie_root" sequence="30"/>
+    <menuitem id="menu_ie_gates" name="Gates" parent="menu_ie_compliance" action="action_ie_compliance_gate"/>
+    <menuitem id="menu_ie_exceptions" name="Exceptions" parent="menu_ie_compliance" action="action_ie_compliance_exception"/>
+    <menuitem id="menu_ie_tx" name="Transaction Exceptions" parent="menu_ie_compliance" action="action_ie_tx_exception"/>
+    <menuitem id="menu_ie_audit" name="Audit Trail" parent="menu_ie_root" action="action_ie_audit_log" sequence="40"/>
+    <menuitem id="menu_ie_config" name="Configuration" parent="menu_ie_root" sequence="90" groups="import_export_control.group_ie_admin"/>
+    <menuitem id="menu_ie_bank_reference" name="Bank References" parent="menu_ie_config" action="action_ie_bank_reference"/>
+    <menuitem id="menu_ie_bu" name="Business Units" parent="menu_ie_config" action="action_ie_business_unit"/>
+    <menuitem id="menu_ie_export_quota" name="Export Quotas" parent="menu_ie_config" action="action_ie_export_quota"/>
+    <menuitem id="menu_ie_dept" name="Departments" parent="menu_ie_config" action="action_ie_department"/>
+    <menuitem id="menu_ie_category" name="Import Categories" parent="menu_ie_config" action="action_ie_import_category"/>
+    <menuitem id="menu_ie_hs" name="HS Codes" parent="menu_ie_config" action="action_ie_hs_code"/>
+    <menuitem id="menu_ie_docs" name="Document Requirements" parent="menu_ie_config" action="action_ie_document_type"/>
+    <menuitem id="menu_ie_qtemplate" name="Quality Templates" parent="menu_ie_config" action="action_ie_quality_template"/>
+    <menuitem id="menu_ie_stages" name="Approval Stages" parent="menu_ie_config" action="action_ie_approval_stage"/>
+</odoo>

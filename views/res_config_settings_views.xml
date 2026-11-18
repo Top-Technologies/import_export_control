@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_ie" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.ie</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="Import &amp; Export" name="import_export_control" groups="import_export_control.group_ie_admin">
+                    <block title="Enforcement" name="ie_enforcement">
+                        <setting string="No order, no transaction" help="Block purchase, receipt, bill, sale and delivery when the linked order is not approved.">
+                            <field name="ie_enforcement"/>
+                        </setting>
+                        <setting string="Duplicate detection">
+                            <field name="ie_duplicate_mode"/>
+                            <field name="ie_duplicate_days"/>
+                        </setting>
+                        <setting string="Tolerances">
+                            <field name="ie_price_tolerance"/>
+                            <field name="ie_recon_tolerance"/>
+                        </setting>
+                        <setting string="Deadlines">
+                            <field name="ie_backreg_days"/>
+                            <field name="ie_lc_alert_days"/>
+                            <field name="ie_approval_delay_days"/>
+                            <field name="ie_proceeds_alert_days"/>
+                        </setting>
+                        <setting string="KPI targets">
+                            <field name="ie_kpi_doc_target"/>
+                            <field name="ie_kpi_stock_target"/>
+                            <field name="ie_kpi_reconcile_target"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

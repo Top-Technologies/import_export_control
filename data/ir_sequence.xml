@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_ie_import_order" model="ir.sequence">
+        <field name="name">Import Order</field>
+        <field name="code">ie.import.order</field>
+        <field name="prefix">IMP/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_ie_export_order" model="ir.sequence">
+        <field name="name">Export Order</field>
+        <field name="code">ie.export.order</field>
+        <field name="prefix">EXP/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_ie_compliance_gate" model="ir.sequence">
+        <field name="name">Compliance Gate</field>
+        <field name="code">ie.compliance.gate</field>
+        <field name="prefix">GATE/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_ie_compliance_exception" model="ir.sequence">
+        <field name="name">Compliance Exception</field>
+        <field name="code">ie.compliance.exception</field>
+        <field name="prefix">EXC/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_ie_shipment" model="ir.sequence">
+        <field name="name">Shipment</field>
+        <field name="code">ie.shipment</field>
+        <field name="prefix">SHP/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_ie_export_proceeds" model="ir.sequence">
+        <field name="name">Export Proceeds</field>
+        <field name="code">ie.export.proceeds</field>
+        <field name="prefix">PRC/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_ie_export_opportunity" model="ir.sequence">
+        <field name="name">Export Opportunity</field>
+        <field name="code">ie.export.opportunity</field>
+        <field name="prefix">OPP/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_ie_transaction_exception" model="ir.sequence">
+        <field name="name">Transaction Exception</field>
+        <field name="code">ie.transaction.exception</field>
+        <field name="prefix">TXE/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

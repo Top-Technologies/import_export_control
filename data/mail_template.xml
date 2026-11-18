@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_template_stage_approval" model="mail.template">
+        <field name="name">Import/Export: approval requested</field>
+        <field name="model_id" ref="approvals.model_approval_request"/>
+        <field name="subject">Approval needed: {{ object.name }}</field>
+        <field name="email_from">{{ user.email_formatted }}</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>An approval is waiting on <t t-out="object.name"/>.</p>
+                <p>Reference: <t t-out="object.reference or ''"/></p>
+            </div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+    <record id="mail_template_lc_expiry" model="mail.template">
+        <field name="name">Letter of credit expiry</field>
+        <field name="model_id" ref="model_ie_lc"/>
+        <field name="subject">LC {{ object.name }} is near expiry</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>Letter of credit <t t-out="object.name"/> expires on <t t-out="object.expiry_date"/>.</p>
+            </div>
+        </field>
+    </record>
+    <record id="mail_template_shipment_delay" model="mail.template">
+        <field name="name">Shipment delay</field>
+        <field name="model_id" ref="model_ie_shipment"/>
+        <field name="subject">Shipment {{ object.name }} is delayed</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>Shipment <t t-out="object.name"/> is past its ETA of <t t-out="object.eta"/>.</p>
+            </div>
+        </field>
+    </record>
+    <record id="mail_template_proceeds_delay" model="mail.template">
+        <field name="name">Outstanding export proceeds</field>
+        <field name="model_id" ref="model_ie_export_proceeds"/>
+        <field name="subject">Outstanding proceeds {{ object.name }}</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>Proceeds <t t-out="object.name"/> still have an outstanding balance.</p>
+            </div>
+        </field>
+    </record>
+    <record id="mail_template_contract_expiry" model="mail.template">
+        <field name="name">Export contract expired</field>
+        <field name="model_id" ref="model_ie_export_order"/>
+        <field name="subject">Contract expired: {{ object.name }}</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>Export order <t t-out="object.name"/> contract <t t-out="object.contract_no"/> expired on <t t-out="object.contract_expiry"/>.</p>
+            </div>
+        </field>
+    </record>
+</odoo>

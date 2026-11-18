@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_ie" model="ir.ui.view">
+        <field name="name">res.partner.form.ie</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='sales_purchases']" position="after">
+                <page string="Import &amp; Export" name="ie_approval">
+                    <group>
+                        <group string="Supplier">
+                            <field name="ie_supplier_status"/>
+                            <field name="ie_supplier_expiry"/>
+                            <field name="ie_supplier_approved"/>
+                        </group>
+                        <group string="Buyer">
+                            <field name="ie_buyer_status"/>
+                            <field name="ie_buyer_expiry"/>
+                            <field name="ie_buyer_approved"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_product_template_form_ie" model="ir.ui.view">
+        <field name="name">product.template.form.ie</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="ie_hs_code_id"/>
+                <field name="ie_quality_template_id"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_purchase_order_form_ie" model="ir.ui.view">
+        <field name="name">purchase.order.form.ie</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_ref']" position="after">
+                <field name="ie_is_import"/>
+                <field name="ie_import_order_id"/>
+                <field name="ie_analytic_business_unit_id" invisible="not ie_import_order_id"/>
+                <field name="ie_analytic_department_id" invisible="not ie_import_order_id"/>
+                <field name="ie_analytic_warehouse_id" invisible="not ie_import_order_id"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_sale_order_form_hide_quote_builder" model="ir.ui.view">
+        <field name="name">sale.order.form.ie.hide.quote.builder</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_pdf_quote_builder.sale_order_form_inherit_sale_pdf_quote_builder"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='pdf_quote_builder']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_sale_order_form_ie" model="ir.ui.view">
+        <field name="name">sale.order.form.ie</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='client_order_ref']" position="after">
+                <field name="ie_is_export"/>
+                <field name="ie_export_order_id"/>
+                <field name="ie_analytic_business_unit_id" invisible="not ie_export_order_id"/>
+                <field name="ie_analytic_department_id" invisible="not ie_export_order_id"/>
+                <field name="ie_analytic_warehouse_id" invisible="not ie_export_order_id"/>
+                <field name="ie_analytic_export_id" invisible="not ie_export_order_id"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_picking_form_ie" model="ir.ui.view">
+        <field name="name">stock.picking.form.ie</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="ie_is_import"/>
+                <field name="ie_import_order_id"/>
+                <field name="ie_is_export"/>
+                <field name="ie_export_order_id"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_move_form_ie" model="ir.ui.view">
+        <field name="name">account.move.form.ie</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                <field name="ie_is_import" invisible="1"/>
+                <field name="ie_import_order_id" invisible="move_type not in ('in_invoice', 'in_refund', 'in_receipt')"/>
+                <field name="ie_is_export" invisible="1"/>
+                <field name="ie_export_order_id" invisible="move_type not in ('out_invoice', 'out_refund', 'out_receipt')"/>
+                <field name="ie_analytic_business_unit_id" invisible="not ie_import_order_id and not ie_export_order_id"/>
+                <field name="ie_analytic_department_id" invisible="not ie_import_order_id and not ie_export_order_id"/>
+                <field name="ie_analytic_warehouse_id" invisible="not ie_import_order_id and not ie_export_order_id"/>
+                <field name="ie_analytic_export_id" invisible="not ie_export_order_id"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="approval_request_view_form_ie" model="ir.ui.view">
+        <field name="name">approval.request.form.ie</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="approvals.approval_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='reference']" position="attributes">
+                <attribute name="invisible">has_reference == 'no' or ie_import_order_id or ie_export_order_id</attribute>
+            </xpath>
+            <xpath expr="//field[@name='reference']" position="after">
+                <field name="ie_import_order_id" string="Reference" readonly="1" invisible="not ie_import_order_id"/>
+                <field name="ie_export_order_id" string="Reference" readonly="1" invisible="not ie_export_order_id"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_quality_check_form_ie" model="ir.ui.view">
+        <field name="name">quality.check.form.ie</field>
+        <field name="model">quality.check</field>
+        <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="ie_import_order_id"/>
+                <field name="ie_export_order_id"/>
+                <field name="ie_moisture"/>
+                <field name="ie_purity"/>
+                <field name="ie_foreign_matter"/>
+                <field name="ie_certificate_no"/>
+                <field name="ie_result"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

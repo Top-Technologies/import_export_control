@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ie_reason_wizard_form" model="ir.ui.view">
+        <field name="name">ie.reason.wizard.form</field>
+        <field name="model">ie.reason.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reason">
+                <group>
+                    <field name="action_code" readonly="1"/>
+                    <field name="import_order_id" invisible="not import_order_id"/>
+                    <field name="export_order_id" invisible="not export_order_id"/>
+                    <field name="approval_request_id" invisible="action_code != 'refuse'"/>
+                    <field name="reason"/>
+                </group>
+                <footer>
+                    <button name="action_apply" type="object" string="Confirm" class="btn-primary"/>
+                    <button string="Discard" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_ie_reason_wizard" model="ir.actions.act_window">
+        <field name="name">Reason</field>
+        <field name="res_model">ie.reason.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

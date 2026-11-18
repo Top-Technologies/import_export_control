@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="quality_tpl_soybean" model="ie.quality.template">
+        <field name="name">Soybean Meal</field>
+        <field name="code">soybean_meal</field>
+    </record>
+    <record id="quality_tpl_sesame" model="ie.quality.template">
+        <field name="name">Sesame</field>
+        <field name="code">sesame</field>
+    </record>
+    <record id="quality_tpl_soybean_moisture" model="ie.quality.template.line">
+        <field name="template_id" ref="quality_tpl_soybean"/>
+        <field name="sequence">10</field>
+        <field name="code">moisture</field>
+        <field name="name">Moisture</field>
+        <field name="max_value">12.5</field>
+        <field name="uom">%</field>
+    </record>
+    <record id="quality_tpl_soybean_purity" model="ie.quality.template.line">
+        <field name="template_id" ref="quality_tpl_soybean"/>
+        <field name="sequence">20</field>
+        <field name="code">purity</field>
+        <field name="name">Purity</field>
+        <field name="min_value">90</field>
+        <field name="uom">%</field>
+    </record>
+    <record id="quality_tpl_soybean_fm" model="ie.quality.template.line">
+        <field name="template_id" ref="quality_tpl_soybean"/>
+        <field name="sequence">30</field>
+        <field name="code">foreign_matter</field>
+        <field name="name">Foreign Matter</field>
+        <field name="max_value">2</field>
+        <field name="uom">%</field>
+    </record>
+    <record id="quality_tpl_sesame_moisture" model="ie.quality.template.line">
+        <field name="template_id" ref="quality_tpl_sesame"/>
+        <field name="sequence">10</field>
+        <field name="code">moisture</field>
+        <field name="name">Moisture</field>
+        <field name="max_value">8</field>
+        <field name="uom">%</field>
+    </record>
+    <record id="quality_tpl_sesame_purity" model="ie.quality.template.line">
+        <field name="template_id" ref="quality_tpl_sesame"/>
+        <field name="sequence">20</field>
+        <field name="code">purity</field>
+        <field name="name">Purity</field>
+        <field name="min_value">99</field>
+        <field name="uom">%</field>
+    </record>
+    <record id="quality_tpl_sesame_fm" model="ie.quality.template.line">
+        <field name="template_id" ref="quality_tpl_sesame"/>
+        <field name="sequence">30</field>
+        <field name="code">foreign_matter</field>
+        <field name="name">Foreign Matter</field>
+        <field name="max_value">1</field>
+        <field name="uom">%</field>
+    </record>
+</odoo>

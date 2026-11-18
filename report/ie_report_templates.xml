@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="ie_report_layout">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2><t t-out="doc.display_name"/></h2>
+                        <t t-out="0"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_import_order_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Import Order <span t-field="doc.name"/></h2>
+                        <p>Supplier: <span t-field="doc.partner_id"/> | Status: <span t-field="doc.state"/> | Value: <span t-field="doc.amount_total"/></p>
+                        <p>Incoterm: <span t-field="doc.incoterm_id"/> | Payment: <span t-field="doc.payment_method"/> | Documents: <span t-field="doc.doc_completeness"/>%</p>
+                        <table class="table table-sm">
+                            <thead><tr><th>Product</th><th>HS Code</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="doc.line_ids" t-as="line">
+                                    <td><span t-field="line.product_id"/></td>
+                                    <td><span t-field="line.hs_code_id"/></td>
+                                    <td><span t-field="line.quantity"/> <span t-field="line.uom_id"/></td>
+                                    <td><span t-field="line.price_unit"/></td>
+                                    <td><span t-field="line.price_subtotal"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_export_order_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Export Order <span t-field="doc.name"/></h2>
+                        <p>Buyer: <span t-field="doc.partner_id"/> | Contract: <span t-field="doc.contract_no"/> | Status: <span t-field="doc.state"/></p>
+                        <p>Available <span t-field="doc.qty_on_hand"/> | Reserved <span t-field="doc.qty_reserved"/> | Order <span t-field="doc.qty_order"/> | Balance <span t-field="doc.qty_balance"/></p>
+                        <table class="table table-sm">
+                            <thead><tr><th>Product</th><th>HS</th><th>Qty</th><th>On hand</th><th>Reserved</th><th>Balance</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="doc.line_ids" t-as="line">
+                                    <td><span t-field="line.product_id"/></td>
+                                    <td><span t-field="line.hs_code_id"/></td>
+                                    <td><span t-field="line.quantity"/></td>
+                                    <td><span t-field="line.qty_on_hand"/></td>
+                                    <td><span t-field="line.qty_reserved"/></td>
+                                    <td><span t-field="line.qty_balance"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_compliance_gate_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Compliance Gate <span t-field="doc.name"/></h2>
+                        <p>Result: <span t-field="doc.result"/></p>
+                        <table class="table table-sm">
+                            <thead><tr><th>Check</th><th>Result</th><th>Remark</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="doc.line_ids" t-as="line">
+                                    <td><span t-field="line.name"/></td>
+                                    <td><span t-field="line.result"/></td>
+                                    <td><span t-field="line.remark"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_approval_history_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Approval History <span t-field="doc.name"/></h2>
+                        <table class="table table-sm">
+                            <thead><tr><th>Request</th><th>Stage</th><th>Status</th><th>Reason</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="doc.approval_request_ids" t-as="req">
+                                    <td><span t-field="req.name"/></td>
+                                    <td><span t-field="req.ie_stage_label"/></td>
+                                    <td><span t-field="req.request_status"/></td>
+                                    <td><span t-field="req.ie_refuse_reason"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_stock_balance_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Stock Balance <span t-field="doc.order_id"/></h2>
+                        <p><span t-field="doc.product_id"/>: available <span t-field="doc.qty_on_hand"/>, reserved <span t-field="doc.qty_reserved"/>, order <span t-field="doc.quantity"/>, balance <span t-field="doc.qty_balance"/>.</p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_lc_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>LC <span t-field="doc.name"/></h2>
+                        <p>Status <span t-field="doc.state"/> | Amount <span t-field="doc.amount"/> | Expiry <span t-field="doc.expiry_date"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_shipment_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Shipment <span t-field="doc.name"/></h2>
+                        <p>Status <span t-field="doc.state"/> | B/L <span t-field="doc.bl_number"/> | ETA <span t-field="doc.eta"/> | Delay <span t-field="doc.delay_days"/> days</p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_proceeds_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Export Proceeds <span t-field="doc.name"/></h2>
+                        <p>Expected <span t-field="doc.amount_expected"/> | Received <span t-field="doc.amount_received"/> | Outstanding <span t-field="doc.amount_outstanding"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_landed_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Landed Cost Summary <span t-field="doc.name"/></h2>
+                        <p>Estimated <span t-field="doc.estimated_cost"/> | Actual <span t-field="doc.actual_landed_cost"/> | Variance <span t-field="doc.cost_variance"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_audit_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Audit <span t-field="doc.res_name"/></h2>
+                        <p><span t-field="doc.date"/> <span t-field="doc.user_id"/> <span t-field="doc.action"/></p>
+                        <p><span t-field="doc.detail"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_exception_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Exception <span t-field="doc.reference"/></h2>
+                        <p><span t-field="doc.name"/> | <span t-field="doc.severity"/> | <span t-field="doc.state"/></p>
+                        <p><span t-field="doc.resolution"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_review_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>90-day Review <span t-field="doc.name"/></h2>
+                        <p>Value <span t-field="doc.value"/> / target <span t-field="doc.target"/> / <span t-field="doc.status"/></p>
+                        <p>Adoption is the share of operational orders that went through an approved import or export order. UAT findings are the open compliance exceptions.</p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_import_order" model="ir.actions.report">
+        <field name="name">Import Order</field>
+        <field name="model">ie.import.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_import_order_document</field>
+        <field name="report_file">import_export_control.report_import_order_document</field>
+        <field name="binding_model_id" ref="model_ie_import_order"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_export_order" model="ir.actions.report">
+        <field name="name">Export Order</field>
+        <field name="model">ie.export.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_export_order_document</field>
+        <field name="report_file">import_export_control.report_export_order_document</field>
+        <field name="binding_model_id" ref="model_ie_export_order"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_gate" model="ir.actions.report">
+        <field name="name">Compliance Gate Result</field>
+        <field name="model">ie.compliance.gate</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_compliance_gate_document</field>
+        <field name="report_file">import_export_control.report_compliance_gate_document</field>
+        <field name="binding_model_id" ref="model_ie_compliance_gate"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_approval_import" model="ir.actions.report">
+        <field name="name">Approval History</field>
+        <field name="model">ie.import.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_approval_history_document</field>
+        <field name="report_file">import_export_control.report_approval_history_document</field>
+        <field name="binding_model_id" ref="model_ie_import_order"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_stock_balance" model="ir.actions.report">
+        <field name="name">Stock Balance</field>
+        <field name="model">ie.export.order.line</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_stock_balance_document</field>
+        <field name="report_file">import_export_control.report_stock_balance_document</field>
+        <field name="binding_model_id" ref="model_ie_export_order_line"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_lc" model="ir.actions.report">
+        <field name="name">LC Status</field>
+        <field name="model">ie.lc</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_lc_document</field>
+        <field name="report_file">import_export_control.report_lc_document</field>
+        <field name="binding_model_id" ref="model_ie_lc"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_shipment" model="ir.actions.report">
+        <field name="name">Shipment Tracking</field>
+        <field name="model">ie.shipment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_shipment_document</field>
+        <field name="report_file">import_export_control.report_shipment_document</field>
+        <field name="binding_model_id" ref="model_ie_shipment"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_proceeds" model="ir.actions.report">
+        <field name="name">Export Proceeds Reconciliation</field>
+        <field name="model">ie.export.proceeds</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_proceeds_document</field>
+        <field name="report_file">import_export_control.report_proceeds_document</field>
+        <field name="binding_model_id" ref="model_ie_export_proceeds"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_landed" model="ir.actions.report">
+        <field name="name">Landed Cost Summary</field>
+        <field name="model">ie.import.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_landed_document</field>
+        <field name="report_file">import_export_control.report_landed_document</field>
+        <field name="binding_model_id" ref="model_ie_import_order"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_audit" model="ir.actions.report">
+        <field name="name">Audit Trail</field>
+        <field name="model">ie.audit.log</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_audit_document</field>
+        <field name="report_file">import_export_control.report_audit_document</field>
+        <field name="binding_model_id" ref="model_ie_audit_log"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_exception" model="ir.actions.report">
+        <field name="name">Exception Register</field>
+        <field name="model">ie.compliance.exception</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_exception_document</field>
+        <field name="report_file">import_export_control.report_exception_document</field>
+        <field name="binding_model_id" ref="model_ie_compliance_exception"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_review" model="ir.actions.report">
+        <field name="name">90-day Post-Implementation Review</field>
+        <field name="model">ie.compliance.kpi</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_export_control.report_review_document</field>
+        <field name="report_file">import_export_control.report_review_document</field>
+        <field name="binding_model_id" ref="model_ie_compliance_kpi"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

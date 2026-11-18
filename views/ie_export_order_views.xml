@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ie_export_order_view_list" model="ir.ui.view">
+        <field name="name">ie.export.order.list</field>
+        <field name="model">ie.export.order</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="product_id"/>
+                <field name="amount_total"/>
+                <field name="qty_on_hand"/>
+                <field name="qty_order"/>
+                <field name="qty_balance"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="ie_export_order_view_form" model="ir.ui.view">
+        <field name="name">ie.export.order.form</field>
+        <field name="model">ie.export.order</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Submit" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_complete_compliance" type="object" string="Complete Compliance" class="btn-primary" invisible="state != 'compliance'" groups="import_export_control.group_ie_compliance"/>
+                    <button name="action_open_customs" type="object" string="Customs / Loading" invisible="state != 'approved'" groups="import_export_control.group_ie_officer"/>
+                    <button name="action_mark_shipped" type="object" string="Mark Shipped" invisible="state != 'customs_loading'" groups="import_export_control.group_ie_officer"/>
+                    <button name="action_mark_proceeds" type="object" string="Proceeds Recorded" invisible="state != 'shipped'" groups="import_export_control.group_ie_finance"/>
+                    <button name="action_finance_sign" type="object" string="Finance Sign-off" invisible="state != 'proceeds'" groups="import_export_control.group_ie_finance"/>
+                    <button name="action_compliance_sign" type="object" string="Compliance Sign-off" invisible="state not in ('proceeds', 'reconciled')" groups="import_export_control.group_ie_compliance"/>
+                    <button name="action_close" type="object" string="Close" class="btn-primary" invisible="state != 'reconciled'" groups="import_export_control.group_ie_finance"/>
+                    <button name="%(import_export_control.action_ie_reason_wizard)d" type="action" string="Stock Override" context="{'default_action_code': 'override', 'default_export_order_id': id}" invisible="state not in ('draft', 'sales_request')" groups="import_export_control.group_ie_management"/>
+                    <button name="%(import_export_control.action_ie_reason_wizard)d" type="action" string="Return" context="{'default_action_code': 'return', 'default_export_order_id': id}" invisible="state in ('draft', 'closed', 'cancelled')"/>
+                    <button name="%(import_export_control.action_ie_reason_wizard)d" type="action" string="Hold" context="{'default_action_code': 'hold', 'default_export_order_id': id}" invisible="state in ('draft', 'hold', 'closed', 'cancelled')" groups="import_export_control.group_ie_compliance"/>
+                    <button name="%(import_export_control.action_ie_reason_wizard)d" type="action" string="Resume" context="{'default_action_code': 'resume', 'default_export_order_id': id}" invisible="state != 'hold'" groups="import_export_control.group_ie_compliance"/>
+                    <button name="%(import_export_control.action_ie_reason_wizard)d" type="action" string="Amend" context="{'default_action_code': 'amend', 'default_export_order_id': id}" invisible="state in ('draft', 'cancelled', 'closed')"/>
+                    <button name="%(import_export_control.action_ie_reason_wizard)d" type="action" string="Cancel" context="{'default_action_code': 'cancel', 'default_export_order_id': id}" invisible="state in ('closed', 'cancelled')" groups="import_export_control.group_ie_management"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sales_request,stock_verification,quality_verification,finance,compliance,management,approved,customs_loading,shipped,proceeds,reconciled,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_sales" type="object" class="oe_stat_button" icon="fa-usd">
+                            <field name="sale_count" widget="statinfo" string="Sales"/>
+                        </button>
+                        <button name="action_view_pickings" type="object" class="oe_stat_button" icon="fa-truck">
+                            <field name="picking_count" widget="statinfo" string="Deliveries"/>
+                        </button>
+                        <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-pencil-square-o">
+                            <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                        </button>
+                        <button name="action_view_proceeds" type="object" class="oe_stat_button" icon="fa-money">
+                            <field name="proceeds_count" widget="statinfo" string="Proceeds"/>
+                        </button>
+                        <button name="action_view_gates" type="object" class="oe_stat_button" icon="fa-check-square-o">
+                            <field name="gate_count" widget="statinfo" string="Compliance"/>
+                        </button>
+                        <button name="action_view_audit" type="object" class="oe_stat_button" icon="fa-history">
+                            <div class="o_stat_info"><span class="o_stat_text">Audit</span></div>
+                        </button>
+                    </div>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="business_unit_id" readonly="state != 'draft'"/>
+                            <field name="product_id" readonly="state != 'draft'"/>
+                            <field name="partner_id" readonly="state != 'draft'"/>
+                            <field name="agent_id"/>
+                            <field name="end_customer_id"/>
+                            <field name="country_id" readonly="state != 'draft'"/>
+                            <field name="contract_no" readonly="state != 'draft'"/>
+                            <field name="contract_expiry"/>
+                            <field name="warehouse_id" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" readonly="state != 'draft'"/>
+                            <field name="amount_total"/>
+                            <field name="payment_method" readonly="state != 'draft'"/>
+                            <field name="advance_amount" invisible="payment_method != 'advance'"/>
+                            <field name="advance_payment_id" invisible="payment_method != 'advance'"/>
+                            <field name="export_line_type"/>
+                            <field name="animal_count" invisible="export_line_type != 'live_animal'"/>
+                            <field name="feed_cost" invisible="export_line_type != 'live_animal'"/>
+                            <field name="veterinary_cost" invisible="export_line_type != 'live_animal'"/>
+                            <field name="holding_cost" invisible="export_line_type != 'live_animal'"/>
+                            <field name="cost_per_animal" invisible="export_line_type != 'live_animal'"/>
+                            <field name="raw_material_cost" invisible="export_line_type != 'teff'"/>
+                            <field name="processing_cost" invisible="export_line_type != 'teff'"/>
+                            <field name="cost_total" invisible="export_line_type == 'other'"/>
+                            <field name="margin_amount" invisible="export_line_type == 'other'"/>
+                            <field name="incoterm_id" readonly="state != 'draft'"/>
+                            <field name="shipment_date" readonly="state != 'draft'"/>
+                            <field name="port_loading" readonly="state != 'draft'"/>
+                            <field name="port_destination" readonly="state != 'draft'"/>
+                            <field name="user_id" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="doc_completeness"/>
+                            <field name="qty_shipped"/>
+                            <field name="proceeds_outstanding"/>
+                            <field name="bank_reconciled"/>
+                            <field name="duplicate_flag"/>
+                            <field name="version"/>
+                        </group>
+                    </group>
+                    <group string="Analytic">
+                        <group>
+                            <field name="analytic_business_unit_plan_id" invisible="1"/>
+                            <field name="analytic_department_plan_id" invisible="1"/>
+                            <field name="analytic_warehouse_plan_id" invisible="1"/>
+                            <field name="analytic_business_unit_id" readonly="state in ('closed', 'cancelled')"/>
+                            <field name="analytic_department_id" readonly="state in ('closed', 'cancelled')"/>
+                        </group>
+                        <group>
+                            <field name="analytic_warehouse_id" readonly="state in ('closed', 'cancelled')"/>
+                            <field name="analytic_export_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids" readonly="state not in ('draft', 'sales_request')">
+                                <list>
+                                    <field name="product_id"/>
+                                    <field name="product_code"/>
+                                    <field name="hs_code_id"/>
+                                    <field name="grade"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_subtotal"/>
+                                    <field name="qty_on_hand"/>
+                                    <field name="qty_reserved"/>
+                                    <field name="qty_balance"/>
+                                    <field name="packaging"/>
+                                    <field name="net_weight"/>
+                                    <field name="gross_weight"/>
+                                    <field name="lot_id"/>
+                                    <field name="location_id"/>
+                                    <field name="moisture"/>
+                                    <field name="purity"/>
+                                    <field name="foreign_matter"/>
+                                    <field name="certificate_no"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="company_id" column_invisible="1"/>
+                                </list>
+                                <form string="Export Line">
+                                    <group>
+                                        <group>
+                                            <field name="product_id"/>
+                                            <field name="product_code"/>
+                                            <field name="hs_code_id"/>
+                                            <field name="grade"/>
+                                            <field name="quantity"/>
+                                            <field name="uom_id"/>
+                                            <field name="price_unit"/>
+                                            <field name="price_subtotal"/>
+                                        </group>
+                                        <group>
+                                            <field name="packaging"/>
+                                            <field name="net_weight"/>
+                                            <field name="gross_weight"/>
+                                            <field name="lot_id"/>
+                                            <field name="location_id"/>
+                                            <field name="certificate_no"/>
+                                            <field name="currency_id" invisible="1"/>
+                                            <field name="company_id" invisible="1"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Stock Balance" name="stock_balance">
+                            <group>
+                                <group>
+                                    <field name="qty_on_hand"/>
+                                    <field name="qty_reserved"/>
+                                    <field name="qty_order"/>
+                                    <field name="qty_balance"/>
+                                </group>
+                                <group>
+                                    <field name="stock_override"/>
+                                    <field name="stock_override_reason" invisible="not stock_override"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Quality Parameters" name="quality">
+                            <field name="line_ids" readonly="state not in ('draft', 'sales_request', 'quality_verification')">
+                                <list>
+                                    <field name="product_id"/>
+                                    <field name="quality_template_id"/>
+                                    <field name="quality_specification"/>
+                                    <field name="quality_check_id"/>
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="product_id"/>
+                                        <field name="quality_template_id"/>
+                                        <field name="quality_specification"/>
+                                        <field name="certificate_no"/>
+                                    </group>
+                                    <field name="parameter_ids">
+                                        <list>
+                                            <field name="code"/>
+                                            <field name="name"/>
+                                            <field name="min_value"/>
+                                            <field name="max_value"/>
+                                            <field name="value"/>
+                                            <field name="uom"/>
+                                            <field name="result"/>
+                                        </list>
+                                        <form string="Quality Parameter">
+                                            <group>
+                                                <field name="template_line_id" domain="[('template_id', '=', parent.quality_template_id)]"/>
+                                                <field name="code" readonly="1"/>
+                                                <field name="name" readonly="1"/>
+                                                <field name="min_value" readonly="1"/>
+                                                <field name="max_value" readonly="1"/>
+                                                <field name="uom" readonly="1"/>
+                                                <field name="value"/>
+                                                <field name="result" readonly="1"/>
+                                            </group>
+                                        </form>
+                                    </field>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Documents" name="documents">
+                            <field name="document_line_ids">
+                                <list>
+                                    <field name="sequence"/>
+                                    <field name="name"/>
+                                    <field name="required"/>
+                                    <field name="blocking_state"/>
+                                    <field name="attached"/>
+                                    <field name="uploaded_by_id"/>
+                                    <field name="verified_by_id"/>
+                                    <button name="action_verify" type="object" string="Verify" invisible="not attached or verified_by_id"/>
+                                </list>
+                                <form string="Document">
+                                    <group>
+                                        <group>
+                                            <field name="document_type_id" domain="[('order_type', 'in', ('export', 'both')), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
+                                            <field name="name" readonly="1"/>
+                                            <field name="code" readonly="1"/>
+                                            <field name="sequence"/>
+                                            <field name="required"/>
+                                            <field name="blocking_state"/>
+                                        </group>
+                                        <group>
+                                            <field name="attachment_ids" widget="many2many_binary"/>
+                                            <field name="uploaded_by_id"/>
+                                            <field name="uploaded_on"/>
+                                            <field name="verified_by_id"/>
+                                            <field name="verified_on"/>
+                                            <field name="company_id" invisible="1"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Shipment and Proceeds" name="ops">
+                            <button name="action_create_sale" type="object" string="Create Sales Order" invisible="state not in ('approved', 'customs_loading', 'shipped', 'proceeds', 'reconciled', 'closed')"/>
+                            <field name="shipment_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="state"/>
+                                    <field name="bl_number"/>
+                                    <field name="eta"/>
+                                    <field name="is_partial"/>
+                                </list>
+                            </field>
+                            <field name="customs_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                            <field name="proceeds_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="amount_expected"/>
+                                    <field name="amount_received"/>
+                                    <field name="amount_outstanding"/>
+                                    <field name="delay_days"/>
+                                    <field name="bank_reconciled"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Reconciliation" name="reconciliation">
+                            <group>
+                                <field name="finance_signed_by_id"/>
+                                <field name="finance_signed_on"/>
+                                <field name="compliance_signed_by_id"/>
+                                <field name="compliance_signed_on"/>
+                            </group>
+                            <field name="revision_ids">
+                                <list>
+                                    <field name="version"/>
+                                    <field name="date"/>
+                                    <field name="user_id"/>
+                                    <field name="reason"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Approvals" name="approvals">
+                            <field name="approval_request_ids">
+                                <list create="false" delete="false">
+                                    <field name="name"/>
+                                    <field name="ie_stage_label"/>
+                                    <field name="request_status"/>
+                                    <field name="ie_refuse_reason"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="ie_export_order_view_search" model="ir.ui.view">
+        <field name="name">ie.export.order.search</field>
+        <field name="model">ie.export.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="contract_no"/>
+                <field name="product_id"/>
+                <filter name="open" string="Open" domain="[('state', 'not in', ('closed', 'cancelled'))]"/>
+                <group>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="ie_export_order_view_pivot" model="ir.ui.view">
+        <field name="name">ie.export.order.pivot</field>
+        <field name="model">ie.export.order</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="product_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="amount_total" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="ie_export_order_view_graph" model="ir.ui.view">
+        <field name="name">ie.export.order.graph</field>
+        <field name="model">ie.export.order</field>
+        <field name="arch" type="xml">
+            <graph>
+                <field name="product_id"/>
+                <field name="amount_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="ie_export_order_view_kanban" model="ir.ui.view">
+        <field name="name">ie.export.order.kanban</field>
+        <field name="model">ie.export.order</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" records_draggable="0" group_create="false" quick_create="false" sample="1">
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold"/>
+                        <field name="partner_id"/>
+                        <field name="contract_no"/>
+                        <field name="product_id"/>
+                        <footer>
+                            <field name="amount_total" widget="monetary"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="action_ie_export_order" model="ir.actions.act_window">
+        <field name="name">Export Orders</field>
+        <field name="res_model">ie.export.order</field>
+        <field name="view_mode">list,kanban,form,pivot,graph</field>
+    </record>
+    <record id="action_ie_stock_balance" model="ir.actions.act_window">
+        <field name="name">Export Stock Balance</field>
+        <field name="res_model">ie.export.order.line</field>
+        <field name="view_mode">list,pivot</field>
+    </record>
+    <record id="ie_export_line_view_list" model="ir.ui.view">
+        <field name="name">ie.export.order.line.list</field>
+        <field name="model">ie.export.order.line</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="order_id"/>
+                <field name="product_id"/>
+                <field name="qty_on_hand"/>
+                <field name="qty_reserved"/>
+                <field name="quantity"/>
+                <field name="qty_balance"/>
+                <field name="uom_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ie_export_opportunity_view_list" model="ir.ui.view">
+        <field name="name">ie.export.opportunity.list</field>
+        <field name="model">ie.export.opportunity</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="agent_id"/>
+                <field name="end_customer_id"/>
+                <field name="product_id"/>
+                <field name="quantity"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="ie_export_opportunity_view_form" model="ir.ui.view">
+        <field name="name">ie.export.opportunity.form</field>
+        <field name="model">ie.export.opportunity</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_qualify" type="object" string="Qualify" invisible="state != 'new'"/>
+                    <button name="action_win" type="object" string="Win" class="btn-primary" invisible="state in ('won', 'lost')"/>
+                    <button name="action_lose" type="object" string="Lose" invisible="state in ('won', 'lost')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,qualified,won"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="partner_id" readonly="state == 'won'"/>
+                            <field name="agent_id" readonly="state == 'won'"/>
+                            <field name="end_customer_id" readonly="state == 'won'"/>
+                            <field name="country_id" readonly="state == 'won'"/>
+                            <field name="product_id" readonly="state == 'won'"/>
+                            <field name="quantity" readonly="state == 'won'"/>
+                            <field name="uom_id" readonly="state == 'won'"/>
+                            <field name="price_unit" readonly="state == 'won'"/>
+                        </group>
+                        <group>
+                            <field name="business_unit_id" readonly="state == 'won'"/>
+                            <field name="warehouse_id" readonly="state == 'won'"/>
+                            <field name="currency_id" readonly="state == 'won'"/>
+                            <field name="contract_no" readonly="state == 'won'"/>
+                            <field name="payment_method" readonly="state == 'won'"/>
+                            <field name="incoterm_id" readonly="state == 'won'"/>
+                            <field name="shipment_date" readonly="state == 'won'"/>
+                            <field name="port_loading" readonly="state == 'won'"/>
+                            <field name="port_destination" readonly="state == 'won'"/>
+                            <field name="export_order_id"/>
+                            <field name="user_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="note"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_ie_export_opportunity" model="ir.actions.act_window">
+        <field name="name">Export Opportunities</field>
+        <field name="res_model">ie.export.opportunity</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="ie_export_quota_view_list" model="ir.ui.view">
+        <field name="name">ie.export.quota.list</field>
+        <field name="model">ie.export.quota</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="product_id"/>
+                <field name="year"/>
+                <field name="allocated_qty"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_ie_export_quota" model="ir.actions.act_window">
+        <field name="name">Export Quotas</field>
+        <field name="res_model">ie.export.quota</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

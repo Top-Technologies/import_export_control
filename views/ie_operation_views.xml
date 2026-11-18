@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ie_lc_view_form" model="ir.ui.view">
+        <field name="name">ie.lc.form</field>
+        <field name="model">ie.lc</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_issue" type="object" string="Issue" invisible="state != 'applied'"/>
+                    <button name="action_utilise" type="object" string="Utilise" invisible="state not in ('issued', 'amended')"/>
+                    <button name="action_close" type="object" string="Close" invisible="state not in ('utilised', 'issued', 'amended')"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="lc_type"/>
+                            <field name="bank_id"/>
+                            <field name="applicant_id"/>
+                            <field name="beneficiary_id"/>
+                            <field name="import_order_id"/>
+                            <field name="export_order_id"/>
+                        </group>
+                        <group>
+                            <field name="currency_id"/>
+                            <field name="amount"/>
+                            <field name="margin_amount"/>
+                            <field name="charge_amount"/>
+                            <field name="issue_date"/>
+                            <field name="expiry_date"/>
+                            <field name="latest_shipment"/>
+                            <field name="closure_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="amendment_ids">
+                        <list editable="bottom">
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="amount"/>
+                            <field name="note"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="ie_lc_view_list" model="ir.ui.view">
+        <field name="name">ie.lc.list</field>
+        <field name="model">ie.lc</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="state"/>
+                <field name="amount"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="expiry_date"/>
+                <field name="import_order_id"/>
+                <field name="export_order_id"/>
+            </list>
+        </field>
+    </record>
+    <record id="ie_dollar_balance_view_list" model="ir.ui.view">
+        <field name="name">ie.dollar.balance.list</field>
+        <field name="model">ie.dollar.balance</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="bank_id"/>
+                <field name="amount"/>
+                <field name="retention_balance"/>
+                <field name="retention_currency_id" column_invisible="1"/>
+                <field name="current_balance"/>
+                <field name="current_currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="ie_dollar_balance_view_form" model="ir.ui.view">
+        <field name="name">ie.dollar.balance.form</field>
+        <field name="model">ie.dollar.balance</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="bank_id"/>
+                            <field name="amount"/>
+                        </group>
+                        <group>
+                            <field name="retention_balance"/>
+                            <field name="retention_currency_id"/>
+                            <field name="current_balance"/>
+                            <field name="current_currency_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" string="New Lines">
+                        <list>
+                            <field name="permit_number"/>
+                            <field name="contract"/>
+                            <field name="lc_number"/>
+                            <field name="bank_reference_id"/>
+                            <field name="currency_id"/>
+                            <field name="paid_date"/>
+                            <field name="amount"/>
+                        </list>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="permit_number"/>
+                                    <field name="contract"/>
+                                    <field name="paid_date"/>
+                                    <field name="lc_number"/>
+                                </group>
+                                <group>
+                                    <field name="amount"/>
+                                    <field name="currency_id"/>
+                                    <field name="bank_reference_id"/>
+                                    <field name="company_id" invisible="1"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="ie_bank_reference_view_list" model="ir.ui.view">
+        <field name="name">ie.bank.reference.list</field>
+        <field name="model">ie.bank.reference</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_ie_bank_reference" model="ir.actions.act_window">
+        <field name="name">Bank References</field>
+        <field name="res_model">ie.bank.reference</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_ie_dollar_balance" model="ir.actions.act_window">
+        <field name="name">Dollar Balance</field>
+        <field name="res_model">ie.dollar.balance</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_ie_lc" model="ir.actions.act_window">
+        <field name="name">Letters of Credit</field>
+        <field name="res_model">ie.lc</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="ie_shipment_view_form" model="ir.ui.view">
+        <field name="name">ie.shipment.form</field>
+        <field name="model">ie.shipment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="transport_mode"/>
+                            <field name="carrier"/>
+                            <field name="bl_number"/>
+                            <field name="container_numbers"/>
+                            <field name="container_available"/>
+                            <field name="container_booked"/>
+                            <field name="booking_reference"/>
+                            <field name="shipping_line"/>
+                            <field name="container_type"/>
+                            <field name="factory_arrival"/>
+                            <field name="is_partial"/>
+                            <field name="quantity"/>
+                        </group>
+                        <group>
+                            <field name="port_loading"/>
+                            <field name="port_destination"/>
+                            <field name="etd"/>
+                            <field name="eta"/>
+                            <field name="atd"/>
+                            <field name="ata"/>
+                            <field name="delay_days"/>
+                            <field name="delay_reason"/>
+                            <field name="import_order_id"/>
+                            <field name="export_order_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="ie_shipment_view_list" model="ir.ui.view">
+        <field name="name">ie.shipment.list</field>
+        <field name="model">ie.shipment</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="state"/>
+                <field name="bl_number"/>
+                <field name="eta"/>
+                <field name="delay_days"/>
+                <field name="import_order_id"/>
+                <field name="export_order_id"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_ie_shipment" model="ir.actions.act_window">
+        <field name="name">Shipments</field>
+        <field name="res_model">ie.shipment</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="ie_customs_view_form" model="ir.ui.view">
+        <field name="name">ie.customs.clearance.form</field>
+        <field name="model">ie.customs.clearance</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_clear" type="object" string="Clear" invisible="state == 'cleared'"/>
+                    <button name="action_hold" type="object" string="Hold" invisible="state == 'held'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="direction"/>
+                        <field name="hs_code_id"/>
+                        <field name="currency_id"/>
+                        <field name="duty_amount"/>
+                        <field name="tax_amount"/>
+                        <field name="exemption_applicable"/>
+                        <field name="exemption_type" invisible="not exemption_applicable"/>
+                        <field name="exemption_reference" invisible="not exemption_applicable"/>
+                        <field name="exemption_status" invisible="not exemption_applicable"/>
+                        <field name="clearance_date"/>
+                        <field name="hold_reason"/>
+                        <field name="import_order_id"/>
+                        <field name="export_order_id"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="attachment_ids" widget="many2many_binary"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="ie_customs_view_list" model="ir.ui.view">
+        <field name="name">ie.customs.clearance.list</field>
+        <field name="model">ie.customs.clearance</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="direction"/>
+                <field name="state"/>
+                <field name="duty_amount"/>
+                <field name="import_order_id"/>
+                <field name="export_order_id"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_ie_customs" model="ir.actions.act_window">
+        <field name="name">Customs Clearance</field>
+        <field name="res_model">ie.customs.clearance</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="ie_proceeds_view_form" model="ir.ui.view">
+        <field name="name">ie.export.proceeds.form</field>
+        <field name="model">ie.export.proceeds</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="export_order_id"/>
+                        <field name="currency_id"/>
+                        <field name="amount_expected"/>
+                        <field name="amount_received"/>
+                        <field name="amount_outstanding"/>
+                        <field name="bank_id"/>
+                        <field name="expected_date"/>
+                        <field name="receipt_date"/>
+                        <field name="fx_rate"/>
+                        <field name="payment_id"/>
+                        <field name="invoice_id"/>
+                        <field name="statement_line_id"/>
+                        <field name="bank_reconciled"/>
+                        <field name="delay_days"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="ie_proceeds_view_list" model="ir.ui.view">
+        <field name="name">ie.export.proceeds.list</field>
+        <field name="model">ie.export.proceeds</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="export_order_id"/>
+                <field name="amount_expected"/>
+                <field name="amount_received"/>
+                <field name="amount_outstanding"/>
+                <field name="delay_days"/>
+                <field name="bank_reconciled"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_ie_proceeds" model="ir.actions.act_window">
+        <field name="name">Export Proceeds</field>
+        <field name="res_model">ie.export.proceeds</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="ie_proceeds_view_list"/>
+        <field name="domain" eval="False"/>
+        <field name="context">{}</field>
+    </record>
+
+    <record id="ie_tx_exception_view_form" model="ir.ui.view">
+        <field name="name">ie.transaction.exception.form</field>
+        <field name="model">ie.transaction.exception</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_approve" type="object" string="Approve" invisible="state != 'draft'" groups="import_export_control.group_ie_management"/>
+                    <button name="action_back_register" type="object" string="Back-register" invisible="state != 'approved'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="order_type"/>
+                        <field name="reason"/>
+                        <field name="requester_id"/>
+                        <field name="approver_id"/>
+                        <field name="deadline"/>
+                        <field name="back_registration_date"/>
+                        <field name="import_order_id"/>
+                        <field name="export_order_id"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="ie_tx_exception_view_list" model="ir.ui.view">
+        <field name="name">ie.transaction.exception.list</field>
+        <field name="model">ie.transaction.exception</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="order_type"/>
+                <field name="state"/>
+                <field name="deadline"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_ie_tx_exception" model="ir.actions.act_window">
+        <field name="name">Transaction Exceptions</field>
+        <field name="res_model">ie.transaction.exception</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

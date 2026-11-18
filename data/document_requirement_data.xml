@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="doc_imp_pr" model="ie.document.type">
+        <field name="name">Purchase Request</field>
+        <field name="code">purchase_request</field>
+        <field name="order_type">import</field>
+        <field name="sequence">10</field>
+        <field name="blocking_state">department</field>
+        <field name="required" eval="True"/>
+    </record>
+    <record id="doc_imp_plan" model="ie.document.type">
+        <field name="name">Approved Procurement Plan</field>
+        <field name="code">procurement_plan</field>
+        <field name="order_type">import</field>
+        <field name="sequence">20</field>
+        <field name="blocking_state">department</field>
+    </record>
+    <record id="doc_imp_quote" model="ie.document.type">
+        <field name="name">Quotation</field>
+        <field name="code">quotation</field>
+        <field name="order_type">import</field>
+        <field name="sequence">30</field>
+        <field name="blocking_state">procurement</field>
+    </record>
+    <record id="doc_imp_pi" model="ie.document.type">
+        <field name="name">Proforma Invoice</field>
+        <field name="code">proforma</field>
+        <field name="order_type">import</field>
+        <field name="sequence">40</field>
+        <field name="blocking_state">procurement</field>
+    </record>
+    <record id="doc_imp_po" model="ie.document.type">
+        <field name="name">Purchase Order</field>
+        <field name="code">purchase_order</field>
+        <field name="order_type">import</field>
+        <field name="sequence">50</field>
+        <field name="blocking_state">finance</field>
+    </record>
+    <record id="doc_imp_contract" model="ie.document.type">
+        <field name="name">Supplier Contract</field>
+        <field name="code">supplier_contract</field>
+        <field name="order_type">import</field>
+        <field name="sequence">60</field>
+        <field name="blocking_state">finance</field>
+    </record>
+    <record id="doc_imp_mgmt" model="ie.document.type">
+        <field name="name">Management Approval</field>
+        <field name="code">management_approval</field>
+        <field name="order_type">import</field>
+        <field name="sequence">70</field>
+        <field name="blocking_state">management</field>
+    </record>
+    <record id="doc_imp_lc_app" model="ie.document.type">
+        <field name="name">LC Application</field>
+        <field name="code">lc_application</field>
+        <field name="order_type">import</field>
+        <field name="sequence">80</field>
+        <field name="blocking_state">bank_lc</field>
+    </record>
+    <record id="doc_imp_lc_copy" model="ie.document.type">
+        <field name="name">LC Copy</field>
+        <field name="code">lc_copy</field>
+        <field name="order_type">import</field>
+        <field name="sequence">90</field>
+        <field name="blocking_state">shipment</field>
+    </record>
+    <record id="doc_imp_shipping" model="ie.document.type">
+        <field name="name">Shipping Documents</field>
+        <field name="code">shipping_documents</field>
+        <field name="order_type">import</field>
+        <field name="sequence">100</field>
+        <field name="blocking_state">shipment</field>
+    </record>
+    <record id="doc_imp_customs" model="ie.document.type">
+        <field name="name">Customs Documents</field>
+        <field name="code">customs_documents</field>
+        <field name="order_type">import</field>
+        <field name="sequence">110</field>
+        <field name="blocking_state">received</field>
+    </record>
+    <record id="doc_imp_grn" model="ie.document.type">
+        <field name="name">GRN</field>
+        <field name="code">grn</field>
+        <field name="order_type">import</field>
+        <field name="sequence">120</field>
+        <field name="blocking_state">received</field>
+    </record>
+    <record id="doc_imp_quality" model="ie.document.type">
+        <field name="name">Quality Report</field>
+        <field name="code">quality_report</field>
+        <field name="order_type">import</field>
+        <field name="sequence">130</field>
+        <field name="blocking_state">received</field>
+    </record>
+    <record id="doc_imp_bank" model="ie.document.type">
+        <field name="name">Bank Documents</field>
+        <field name="code">bank_documents</field>
+        <field name="order_type">import</field>
+        <field name="sequence">140</field>
+        <field name="blocking_state">closed</field>
+    </record>
+    <record id="doc_imp_payment" model="ie.document.type">
+        <field name="name">Payment Evidence</field>
+        <field name="code">payment_evidence</field>
+        <field name="order_type">import</field>
+        <field name="sequence">150</field>
+        <field name="blocking_state">closed</field>
+    </record>
+
+    <record id="doc_exp_contract" model="ie.document.type">
+        <field name="name">Sales Contract</field>
+        <field name="code">sales_contract</field>
+        <field name="order_type">export</field>
+        <field name="sequence">10</field>
+        <field name="blocking_state">sales_request</field>
+    </record>
+    <record id="doc_exp_pi" model="ie.document.type">
+        <field name="name">Proforma Invoice</field>
+        <field name="code">proforma</field>
+        <field name="order_type">export</field>
+        <field name="sequence">20</field>
+        <field name="blocking_state">sales_request</field>
+    </record>
+    <record id="doc_exp_invoice" model="ie.document.type">
+        <field name="name">Commercial Invoice</field>
+        <field name="code">commercial_invoice</field>
+        <field name="order_type">export</field>
+        <field name="sequence">30</field>
+        <field name="blocking_state">finance</field>
+    </record>
+    <record id="doc_exp_packing" model="ie.document.type">
+        <field name="name">Packing List</field>
+        <field name="code">packing_list</field>
+        <field name="order_type">export</field>
+        <field name="sequence">40</field>
+        <field name="blocking_state">stock_verification</field>
+    </record>
+    <record id="doc_exp_quality" model="ie.document.type">
+        <field name="name">Quality Certificate</field>
+        <field name="code">quality_certificate</field>
+        <field name="order_type">export</field>
+        <field name="sequence">50</field>
+        <field name="blocking_state">quality_verification</field>
+    </record>
+    <record id="doc_exp_permit" model="ie.document.type">
+        <field name="name">Export Permit/Licence</field>
+        <field name="code">export_permit</field>
+        <field name="order_type">export</field>
+        <field name="sequence">60</field>
+        <field name="blocking_state">customs_loading</field>
+    </record>
+    <record id="doc_exp_bl" model="ie.document.type">
+        <field name="name">Bill of Lading/Airway Bill</field>
+        <field name="code">bl_awb</field>
+        <field name="order_type">export</field>
+        <field name="sequence">70</field>
+        <field name="blocking_state">shipped</field>
+    </record>
+    <record id="doc_exp_customs" model="ie.document.type">
+        <field name="name">Customs Declaration</field>
+        <field name="code">customs_declaration</field>
+        <field name="order_type">export</field>
+        <field name="sequence">80</field>
+        <field name="blocking_state">shipped</field>
+    </record>
+    <record id="doc_exp_bank" model="ie.document.type">
+        <field name="name">Bank Documents</field>
+        <field name="code">bank_documents</field>
+        <field name="order_type">export</field>
+        <field name="sequence">90</field>
+        <field name="blocking_state">proceeds</field>
+    </record>
+    <record id="doc_exp_proceeds" model="ie.document.type">
+        <field name="name">Export Proceeds Evidence</field>
+        <field name="code">proceeds_evidence</field>
+        <field name="order_type">export</field>
+        <field name="sequence">100</field>
+        <field name="blocking_state">proceeds</field>
+    </record>
+    <record id="doc_exp_mgmt" model="ie.document.type">
+        <field name="name">Management Approval</field>
+        <field name="code">management_approval</field>
+        <field name="order_type">export</field>
+        <field name="sequence">110</field>
+        <field name="blocking_state">management</field>
+    </record>
+</odoo>

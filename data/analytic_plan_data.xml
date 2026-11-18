@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="analytic_plan_department" model="account.analytic.plan">
+        <field name="name">Department</field>
+    </record>
+    <record id="analytic_plan_export" model="account.analytic.plan">
+        <field name="name">Export</field>
+    </record>
+</odoo>

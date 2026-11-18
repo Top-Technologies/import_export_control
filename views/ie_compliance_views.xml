@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ie_compliance_gate_view_form" model="ir.ui.view">
+        <field name="name">ie.compliance.gate.form</field>
+        <field name="model">ie.compliance.gate</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_recompute" type="object" string="Recompute" invisible="state != 'draft'"/>
+                    <button name="action_finalize" type="object" string="Finalize" class="btn-primary" invisible="state != 'draft'" groups="import_export_control.group_ie_compliance"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="order_type"/>
+                        <field name="result"/>
+                        <field name="import_order_id"/>
+                        <field name="export_order_id"/>
+                        <field name="user_id"/>
+                        <field name="check_date"/>
+                        <field name="fail_reason"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="mandatory"/>
+                            <field name="result"/>
+                            <field name="remark"/>
+                            <field name="auto"/>
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                            <field name="user_id"/>
+                            <field name="check_date"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="ie_compliance_gate_view_list" model="ir.ui.view">
+        <field name="name">ie.compliance.gate.list</field>
+        <field name="model">ie.compliance.gate</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="order_type"/>
+                <field name="result" widget="badge"/>
+                <field name="state"/>
+                <field name="import_order_id"/>
+                <field name="export_order_id"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_ie_compliance_gate" model="ir.actions.act_window">
+        <field name="name">Compliance Gates</field>
+        <field name="res_model">ie.compliance.gate</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="ie_compliance_exception_view_form" model="ir.ui.view">
+        <field name="name">ie.compliance.exception.form</field>
+        <field name="model">ie.compliance.exception</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_resolve" type="object" string="Resolve" invisible="state != 'open'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="reference"/>
+                        <field name="name"/>
+                        <field name="severity"/>
+                        <field name="user_id"/>
+                        <field name="due_date"/>
+                        <field name="import_order_id"/>
+                        <field name="export_order_id"/>
+                        <field name="gate_id"/>
+                        <field name="resolution"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="ie_compliance_exception_view_list" model="ir.ui.view">
+        <field name="name">ie.compliance.exception.list</field>
+        <field name="model">ie.compliance.exception</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="reference"/>
+                <field name="name"/>
+                <field name="severity"/>
+                <field name="state"/>
+                <field name="due_date"/>
+                <field name="user_id"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_ie_compliance_exception" model="ir.actions.act_window">
+        <field name="name">Compliance Exceptions</field>
+        <field name="res_model">ie.compliance.exception</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

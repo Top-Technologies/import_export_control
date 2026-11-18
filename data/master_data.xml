@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="bu_trading" model="ie.business.unit">
+        <field name="name">Trading</field>
+        <field name="code">TRD</field>
+    </record>
+    <record id="bu_engineering" model="ie.business.unit">
+        <field name="name">Engineering</field>
+        <field name="code">ENG</field>
+    </record>
+    <record id="bu_feed" model="ie.business.unit">
+        <field name="name">Feed</field>
+        <field name="code">FEED</field>
+    </record>
+    <record id="bu_projects" model="ie.business.unit">
+        <field name="name">Projects</field>
+        <field name="code">PRJ</field>
+    </record>
+    <record id="bu_food" model="ie.business.unit">
+        <field name="name">Food Processing</field>
+        <field name="code">FOOD</field>
+    </record>
+    <record id="dept_procurement" model="ie.department">
+        <field name="name">Procurement</field>
+        <field name="code">PROC</field>
+        <field name="business_unit_id" ref="bu_trading"/>
+    </record>
+    <record id="dept_finance" model="ie.department">
+        <field name="name">Finance</field>
+        <field name="code">FIN</field>
+        <field name="business_unit_id" ref="bu_trading"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+    <record id="dept_sales" model="ie.department">
+        <field name="name">Sales</field>
+        <field name="code">SAL</field>
+        <field name="business_unit_id" ref="bu_trading"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+    <record id="dept_warehouse" model="ie.department">
+        <field name="name">Warehouse</field>
+        <field name="code">WH</field>
+        <field name="business_unit_id" ref="bu_trading"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+    <record id="dept_quality" model="ie.department">
+        <field name="name">Quality</field>
+        <field name="code">QA</field>
+        <field name="business_unit_id" ref="bu_feed"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+    <record id="dept_engineering" model="ie.department">
+        <field name="name">Engineering</field>
+        <field name="code">ENG</field>
+        <field name="business_unit_id" ref="bu_engineering"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+    <record id="dept_projects" model="ie.department">
+        <field name="name">Projects</field>
+        <field name="code">PRJ</field>
+        <field name="business_unit_id" ref="bu_projects"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+    <record id="dept_food" model="ie.department">
+        <field name="name">Food Processing</field>
+        <field name="code">FOOD</field>
+        <field name="business_unit_id" ref="bu_food"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+    <record id="cat_raw" model="ie.import.category">
+        <field name="name">Raw Material</field>
+        <field name="code">RAW</field>
+    </record>
+    <record id="cat_machine" model="ie.import.category">
+        <field name="name">Machinery</field>
+        <field name="code">MCH</field>
+    </record>
+    <record id="cat_spare" model="ie.import.category">
+        <field name="name">Spare Parts</field>
+        <field name="code">SPR</field>
+    </record>
+    <record id="cat_pack" model="ie.import.category">
+        <field name="name">Packaging</field>
+        <field name="code">PKG</field>
+    </record>
+    <record id="cat_other" model="ie.import.category">
+        <field name="name">Other</field>
+        <field name="code">OTH</field>
+    </record>
+    <record id="hs_soybean" model="ie.hs.code">
+        <field name="code">230400</field>
+        <field name="name">Soybean meal</field>
+    </record>
+    <record id="hs_sesame" model="ie.hs.code">
+        <field name="code">120740</field>
+        <field name="name">Sesame seeds</field>
+    </record>
+    <record id="hs_generic" model="ie.hs.code">
+        <field name="code">999999</field>
+        <field name="name">Other goods</field>
+    </record>
+</odoo>

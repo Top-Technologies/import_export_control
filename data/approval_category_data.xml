@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- One Approvals category per workflow stage. Approvers are copied from ie.approval.stage at submit. -->
+    <record id="approval_cat_imp_department" model="approval.category">
+        <field name="name">Import Department Approval</field>
+        <field name="approval_minimum">1</field>
+        <field name="requirer_document">optional</field>
+        <field name="has_amount">optional</field>
+        <field name="has_partner">optional</field>
+        <field name="has_reference">optional</field>
+    </record>
+    <record id="approval_cat_imp_procurement" model="approval.category">
+        <field name="name">Import Procurement Verification</field>
+        <field name="approval_minimum">1</field>
+        <field name="requirer_document">optional</field>
+        <field name="has_amount">optional</field>
+        <field name="has_partner">optional</field>
+        <field name="has_reference">optional</field>
+    </record>
+    <record id="approval_cat_imp_finance" model="approval.category">
+        <field name="name">Import Finance Verification</field>
+        <field name="approval_minimum">1</field>
+        <field name="requirer_document">optional</field>
+        <field name="has_amount">optional</field>
+        <field name="has_partner">optional</field>
+        <field name="has_reference">optional</field>
+    </record>
+    <record id="approval_cat_imp_review" model="approval.category">
+        <field name="name">Import and Export Review</field>
+        <field name="approval_minimum">1</field>
+        <field name="requirer_document">optional</field>
+        <field name="has_amount">optional</field>
+        <field name="has_partner">optional</field>
+        <field name="has_reference">optional</field>
+    </record>
+    <record id="approval_cat_imp_management" model="approval.category">
+        <field name="name">Import Management Approval</field>
+        <field name="approval_minimum">1</field>
+        <field name="requirer_document">optional</field>
+        <field name="has_amount">optional</field>
+        <field name="has_partner">optional</field>
+        <field name="has_reference">optional</field>
+    </record>
+    <record id="approval_cat_exp_sales" model="approval.category">
+        <field name="name">Export Sales Request</field>
+        <field name="approval_minimum">1</field>
+        <field name="requirer_document">optional</field>
+        <field name="has_amount">optional</field>
+        <field name="has_partner">optional</field>
+        <field name="has_reference">optional</field>
+    </record>
+    <record id="approval_cat_exp_stock" model="approval.category">
+        <field name="name">Export Stock Verification</field>
+        <field name="approval_minimum">1</field>
+        <field name="requirer_document">optional</field>
+        <field name="has_amount">optional</field>
+        <field name="has_partner">optional</field>
+        <field name="has_reference">optional</field>
+    </record>
+    <record id="approval_cat_exp_quality" model="approval.category">
+        <field name="name">Export Quality Verification</field>
+        <field name="approval_minimum">1</field>
+        <field name="requirer_document">optional</field>
+        <field name="has_amount">optional</field>
+        <field name="has_partner">optional</field>
+        <field name="has_reference">optional</field>
+    </record>
+    <record id="approval_cat_exp_finance" model="approval.category">
+        <field name="name">Export Finance Review</field>
+        <field name="approval_minimum">1</field>
+        <field name="requirer_document">optional</field>
+        <field name="has_amount">optional</field>
+        <field name="has_partner">optional</field>
+        <field name="has_reference">optional</field>
+    </record>
+    <record id="approval_cat_exp_management" model="approval.category">
+        <field name="name">Export Management Approval</field>
+        <field name="approval_minimum">1</field>
+        <field name="requirer_document">optional</field>
+        <field name="has_amount">optional</field>
+        <field name="has_partner">optional</field>
+        <field name="has_reference">optional</field>
+    </record>
+
+    <record id="stage_imp_department" model="ie.approval.stage">
+        <field name="name">Department Approval</field>
+        <field name="order_type">import</field>
+        <field name="state_code">department</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="approval_cat_imp_department"/>
+    </record>
+    <record id="stage_imp_procurement" model="ie.approval.stage">
+        <field name="name">Procurement Verification</field>
+        <field name="order_type">import</field>
+        <field name="state_code">procurement</field>
+        <field name="sequence">20</field>
+        <field name="category_id" ref="approval_cat_imp_procurement"/>
+    </record>
+    <record id="stage_imp_finance" model="ie.approval.stage">
+        <field name="name">Finance Verification</field>
+        <field name="order_type">import</field>
+        <field name="state_code">finance</field>
+        <field name="sequence">30</field>
+        <field name="category_id" ref="approval_cat_imp_finance"/>
+    </record>
+    <record id="stage_imp_review" model="ie.approval.stage">
+        <field name="name">Import and Export Review</field>
+        <field name="order_type">import</field>
+        <field name="state_code">ie_review</field>
+        <field name="sequence">40</field>
+        <field name="category_id" ref="approval_cat_imp_review"/>
+    </record>
+    <record id="stage_imp_management" model="ie.approval.stage">
+        <field name="name">Management Approval</field>
+        <field name="order_type">import</field>
+        <field name="state_code">management</field>
+        <field name="sequence">50</field>
+        <field name="category_id" ref="approval_cat_imp_management"/>
+    </record>
+    <record id="stage_exp_sales" model="ie.approval.stage">
+        <field name="name">Sales Request</field>
+        <field name="order_type">export</field>
+        <field name="state_code">sales_request</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="approval_cat_exp_sales"/>
+    </record>
+    <record id="stage_exp_stock" model="ie.approval.stage">
+        <field name="name">Stock Verification</field>
+        <field name="order_type">export</field>
+        <field name="state_code">stock_verification</field>
+        <field name="sequence">20</field>
+        <field name="category_id" ref="approval_cat_exp_stock"/>
+    </record>
+    <record id="stage_exp_quality" model="ie.approval.stage">
+        <field name="name">Quality Verification</field>
+        <field name="order_type">export</field>
+        <field name="state_code">quality_verification</field>
+        <field name="sequence">30</field>
+        <field name="category_id" ref="approval_cat_exp_quality"/>
+    </record>
+    <record id="stage_exp_finance" model="ie.approval.stage">
+        <field name="name">Finance Review</field>
+        <field name="order_type">export</field>
+        <field name="state_code">finance</field>
+        <field name="sequence">40</field>
+        <field name="category_id" ref="approval_cat_exp_finance"/>
+    </record>
+    <record id="stage_exp_management" model="ie.approval.stage">
+        <field name="name">Management Approval</field>
+        <field name="order_type">export</field>
+        <field name="state_code">management</field>
+        <field name="sequence">50</field>
+        <field name="category_id" ref="approval_cat_exp_management"/>
+    </record>
+</odoo>
