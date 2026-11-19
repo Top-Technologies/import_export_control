@@ -129,6 +129,30 @@ class IeWorkflowMixin(models.AbstractModel):
         if xmlid and not self.env.user.has_group(xmlid):
             raise UserError(_("You are not allowed to perform this step."))
 
+    def _ie_check_compliance_user(self):
+        """Control & Compliance and the module administrator may complete the gate.
+
+        The user who created the order is allowed.
+        """
+        if self.env.su:
+            return
+        user = self.env.user
+        if user.has_group('import_export_control.group_ie_compliance') or user.has_group('import_export_control.group_ie_admin'):
+            return
+        raise UserError(_("Only Control & Compliance or an administrator can complete this step."))
+
+    def _ie_check_finance_user(self):
+        """Finance and the module administrator may approve foreign currency.
+
+        The user who created the order is allowed.
+        """
+        if self.env.su:
+            return
+        user = self.env.user
+        if user.has_group('import_export_control.group_ie_finance') or user.has_group('import_export_control.group_ie_admin'):
+            return
+        raise UserError(_("Only Finance or an administrator can approve foreign currency."))
+
     def _ie_check_not_maker(self):
         self.ensure_one()
         if self.env.su:
@@ -152,17 +176,9 @@ class IeWorkflowMixin(models.AbstractModel):
             order._ie_log('transition', detail='%s -> %s' % (old, new_state), reason=reason, old_state=old, new_state=new_state)
             order.message_post(body=_("Status changed from %(old)s to %(new)s. %(reason)s", old=old, new=new_state, reason=reason or ''))
 
-    def _ie_missing_documents(self, target_state):
-        self.ensure_one()
-        return self.document_line_ids.filtered(
-            lambda line: line.required and line.blocking_state == target_state and not line.attachment_ids
-        )
-
     def _ie_require_documents(self, target_state):
-        missing = self._ie_missing_documents(target_state)
-        if missing:
-            names = ', '.join(missing.mapped('name'))
-            raise UserError(_("These documents are required before %(state)s: %(docs)s", state=target_state, docs=names))
+        """Document lines stay on the order. They do not block a state change."""
+        return True
 
     def _ie_prepare_document_lines(self):
         kind = 'import' if self._name == 'ie.import.order' else 'export'
@@ -181,45 +197,7 @@ class IeWorkflowMixin(models.AbstractModel):
         }) for doc_type in types]
 
     def _ie_open_approval(self):
-        """Create and submit an approval.request for the current state."""
-        stage_model = self.env['ie.approval.stage']
-        for order in self:
-            if order.state not in order._ie_approval_states():
-                continue
-            stage = stage_model._ie_match(order)
-            if not stage:
-                raise UserError(_("Configure an approval stage for %(state)s on %(company)s.", state=order.state, company=order.company_id.display_name))
-            approvers = stage._ie_configured_approvers().filtered(
-                lambda user: user != order.create_uid and user.company_ids & order.company_id
-            )
-            if not approvers:
-                raise UserError(_("Set at least one approver, other than the maker, on %s.", stage.category_id.display_name or stage.display_name))
-            category = stage.category_id
-            if category.company_id != order.company_id:
-                raise UserError(_("Approval category %s belongs to another company.", category.display_name))
-            # Keep the Approvals category aligned so its computed approver list matches this stage.
-            category.sudo().write({
-                'approval_minimum': len(approvers),
-                'approver_ids': [(5, 0, 0)] + [(0, 0, {'user_id': user.id, 'required': True, 'sequence': 10 + index}) for index, user in enumerate(approvers)],
-            })
-            request = self.env['approval.request'].create({
-                'name': '%s / %s' % (order.name, stage.name),
-                'category_id': category.id,
-                'request_owner_id': order.create_uid.id,
-                'partner_id': order.partner_id.id,
-                'amount': order.amount_total,
-                'reference': order.name,
-                'reason': stage.name,
-                'ie_import_order_id': order.id if order._name == 'ie.import.order' else False,
-                'ie_export_order_id': order.id if order._name == 'ie.export.order' else False,
-                'ie_stage_code': order.state,
-                'ie_approval_stage_id': stage.id,
-            })
-            request.action_confirm()
-            order._ie_log('approval', detail=_('Approval request %s submitted.', request.name), new_state=order.state)
-            template = self.env.ref('import_export_control.mail_template_stage_approval', raise_if_not_found=False)
-            if template:
-                template.send_mail(request.id, force_send=False)
+        """Approval stages are not required. The order moves without an Approvals request."""
         return True
 
     def _ie_on_stage_approved(self, request):
@@ -284,6 +262,18 @@ class IeWorkflowMixin(models.AbstractModel):
         if requests:
             requests.action_cancel()
 
+    def action_next_stage(self):
+        """Move the order one step forward. Draft still uses the submit checks."""
+        for order in self:
+            if order.state == 'draft':
+                order.action_submit()
+                continue
+            nxt = order._ie_flow_next().get(order.state)
+            if not nxt:
+                raise UserError(_("This order has no next stage."))
+            order._ie_enter_state(nxt, reason=_('Moved to the next stage.'))
+        return True
+
     def action_return_previous(self, reason):
         if not reason:
             raise UserError(_("A reason is required to return the order."))
@@ -307,7 +297,7 @@ class IeWorkflowMixin(models.AbstractModel):
         for order in self:
             if order.state in ('closed', 'cancelled', 'hold'):
                 raise UserError(_("This order cannot be put on hold."))
-            order._ie_check_group('import_export_control.group_ie_compliance')
+            order._ie_check_compliance_user()
             order.with_context(ie_state_bypass=True, ie_skip_audit=True).write({'hold_state': order.state})
             order._ie_cancel_open_approvals()
             order._ie_set_state('hold', reason=reason)

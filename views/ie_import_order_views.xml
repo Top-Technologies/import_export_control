@@ -22,8 +22,9 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <button name="action_next_stage" type="object" string="Next Stage" class="btn-primary" invisible="state in ('closed', 'cancelled', 'hold')"/>
                     <button name="action_submit" type="object" string="Submit" class="btn-primary" invisible="state != 'draft'"/>
-                    <button name="action_complete_compliance" type="object" string="Complete Compliance" class="btn-primary" invisible="state != 'compliance'" groups="import_export_control.group_ie_compliance"/>
+                    <button name="action_complete_compliance" type="object" string="Complete Compliance" class="btn-primary" invisible="state != 'compliance'" groups="import_export_control.group_ie_compliance,import_export_control.group_ie_admin"/>
                     <button name="action_open_bank" type="object" string="Start Bank / LC" invisible="state != 'approved'" groups="import_export_control.group_ie_finance"/>
                     <button name="action_open_shipment" type="object" string="Shipment" invisible="state != 'bank_lc'" groups="import_export_control.group_ie_officer"/>
                     <button name="action_mark_received" type="object" string="Goods Received" invisible="state != 'shipment'" groups="import_export_control.group_ie_warehouse"/>
@@ -31,8 +32,8 @@
                     <button name="action_compliance_sign" type="object" string="Compliance Sign-off" invisible="state != 'received'" groups="import_export_control.group_ie_compliance"/>
                     <button name="action_close" type="object" string="Close" class="btn-primary" invisible="state != 'received'" groups="import_export_control.group_ie_finance"/>
                     <button name="action_submit_forex" type="object" string="Submit Foreign Currency" invisible="payment_method != 'lc' or forex_state not in ('draft', 'refused')" groups="import_export_control.group_ie_officer"/>
-                    <button name="action_approve_forex" type="object" string="Approve Foreign Currency" class="btn-primary" invisible="payment_method != 'lc' or forex_state != 'submitted'" groups="import_export_control.group_ie_finance"/>
-                    <button name="action_refuse_forex" type="object" string="Refuse Foreign Currency" invisible="payment_method != 'lc' or forex_state != 'submitted'" groups="import_export_control.group_ie_finance"/>
+                    <button name="action_approve_forex" type="object" string="Approve Foreign Currency" class="btn-primary" invisible="payment_method != 'lc' or forex_state != 'submitted'" groups="import_export_control.group_ie_finance,import_export_control.group_ie_admin"/>
+                    <button name="action_refuse_forex" type="object" string="Refuse Foreign Currency" invisible="payment_method != 'lc' or forex_state != 'submitted'" groups="import_export_control.group_ie_finance,import_export_control.group_ie_admin"/>
                     <button name="action_technical_pass" type="object" string="Technical Pass" invisible="not is_machinery" groups="import_export_control.group_ie_quality,import_export_control.group_ie_procurement"/>
                     <button name="action_technical_fail" type="object" string="Technical Fail" invisible="not is_machinery" groups="import_export_control.group_ie_quality,import_export_control.group_ie_procurement"/>
                     <button name="action_transfer_to_unit" type="object" string="Transfer to Unit" invisible="state not in ('received', 'closed')" groups="import_export_control.group_ie_warehouse,import_export_control.group_ie_officer"/>
