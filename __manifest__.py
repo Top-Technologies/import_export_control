@@ -62,9 +62,6 @@ export proceeds, the compliance gate and the audit log.
         'report/ie_report_templates.xml',
         'views/ie_menus.xml',
     ],
-    'demo': [
-        'demo/demo.xml',
-    ],
     'assets': {
         'web.assets_backend': [
             'import_export_control/static/src/dashboard/dashboard.scss',
