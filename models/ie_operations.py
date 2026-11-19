@@ -196,7 +196,7 @@ class IeDollarBalance(models.Model):
     @api.depends('line_ids.amount', 'line_ids.currency_id', 'line_ids.paid_date', 'retention_currency_id')
     def _compute_amount(self):
         for balance in self:
-            balance.amount = sum(balance.line_ids.mapped(lambda line: line._ie_retention_value()))
+            balance.amount = sum(line._ie_retention_value() for line in balance.line_ids)
 
     @api.constrains('company_id', 'bank_id')
     def _check_bank_unique(self):
