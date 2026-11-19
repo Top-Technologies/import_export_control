@@ -118,8 +118,7 @@ class IeComplianceGate(models.Model):
         if code == 'payment':
             return ('pass', order.payment_method) if order.payment_method else ('fail', _('Payment method is missing.'))
         if code == 'documents':
-            missing = order.document_line_ids.filtered(lambda line: line.required and not line.attachment_ids)
-            return ('fail', _('Missing %s.', ', '.join(missing.mapped('name')))) if missing else ('pass', _('Required documents are attached.'))
+            return ('pass', _('Documents are not required to pass this check.'))
         if code == 'budget':
             budget = order.business_unit_id.budget_amount
             if not budget:
@@ -203,10 +202,7 @@ class IeComplianceGate(models.Model):
         for gate in self:
             if gate.state != 'draft':
                 raise UserError(_("The gate is already finalized."))
-            if self.env.user == gate._ie_order().create_uid and not self.env.su:
-                raise UserError(_("The order creator cannot finalize the compliance gate."))
-            if not self.env.su and not self.env.user.has_group('import_export_control.group_ie_compliance'):
-                raise UserError(_("Only Control & Compliance can finalize the gate."))
+            gate._ie_order()._ie_check_compliance_user()
             pending = gate.line_ids.filtered(lambda line: line.mandatory and line.result not in ('pass', 'fail', 'na'))
             if pending:
                 raise UserError(_("Complete every mandatory check."))

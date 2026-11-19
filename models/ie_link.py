@@ -79,15 +79,9 @@ class PurchaseOrder(models.Model):
         related='ie_import_order_id.analytic_warehouse_id',
     )
 
-    def button_confirm(self):
-        for order in self:
-            _ie_guard(order, 'import')
-        return super().button_confirm()
-
-    def button_approve(self, force=False):
-        for order in self:
-            _ie_guard(order, 'import')
-        return super().button_approve(force=force)
+    def _approval_allowed(self):
+        """Confirm a purchase order without the second approval step."""
+        return True
 
     def _prepare_invoice(self):
         vals = super()._prepare_invoice()

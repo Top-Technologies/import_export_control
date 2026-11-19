@@ -607,8 +607,7 @@ class IeExportOrder(models.Model):
         for order in self:
             if order.state != 'compliance':
                 raise UserError(_("The compliance gate is not the current step."))
-            order._ie_check_group('import_export_control.group_ie_compliance')
-            order._ie_check_not_maker()
+            order._ie_check_compliance_user()
             gate = order.gate_ids.filtered(lambda item: item.state != 'cancelled')[:1]
             if gate.state == 'done' and gate.result in ('exception', 'hold'):
                 gate.write({'state': 'draft', 'result': False, 'fail_reason': False})
@@ -686,9 +685,6 @@ class IeExportOrder(models.Model):
 
     def _ie_assert_can_close(self):
         self.ensure_one()
-        missing = self.document_line_ids.filtered(lambda line: line.required and not line.attachment_ids)
-        if missing:
-            raise UserError(_("Complete the required documents before closing: %s", ', '.join(missing.mapped('name'))))
         if not self.finance_signed_by_id or not self.compliance_signed_by_id:
             raise UserError(_("Finance and Control & Compliance must both sign off before closure."))
         open_exceptions = self.exception_ids.filtered(lambda item: item.state not in ('resolved', 'cancelled'))

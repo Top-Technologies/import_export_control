@@ -7,7 +7,7 @@
             <form>
                 <header>
                     <button name="action_recompute" type="object" string="Recompute" invisible="state != 'draft'"/>
-                    <button name="action_finalize" type="object" string="Finalize" class="btn-primary" invisible="state != 'draft'" groups="import_export_control.group_ie_compliance"/>
+                    <button name="action_finalize" type="object" string="Finalize" class="btn-primary" invisible="state != 'draft'" groups="import_export_control.group_ie_compliance,import_export_control.group_ie_admin"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>

@@ -24,8 +24,9 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <button name="action_next_stage" type="object" string="Next Stage" class="btn-primary" invisible="state in ('closed', 'cancelled', 'hold')"/>
                     <button name="action_submit" type="object" string="Submit" class="btn-primary" invisible="state != 'draft'"/>
-                    <button name="action_complete_compliance" type="object" string="Complete Compliance" class="btn-primary" invisible="state != 'compliance'" groups="import_export_control.group_ie_compliance"/>
+                    <button name="action_complete_compliance" type="object" string="Complete Compliance" class="btn-primary" invisible="state != 'compliance'" groups="import_export_control.group_ie_compliance,import_export_control.group_ie_admin"/>
                     <button name="action_open_customs" type="object" string="Customs / Loading" invisible="state != 'approved'" groups="import_export_control.group_ie_officer"/>
                     <button name="action_mark_shipped" type="object" string="Mark Shipped" invisible="state != 'customs_loading'" groups="import_export_control.group_ie_officer"/>
                     <button name="action_mark_proceeds" type="object" string="Proceeds Recorded" invisible="state != 'shipped'" groups="import_export_control.group_ie_finance"/>
