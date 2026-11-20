@@ -34,6 +34,23 @@
             </xpath>
         </field>
     </record>
+    <record id="view_stock_landed_cost_form_ie" model="ir.ui.view">
+        <field name="name">stock.landed.cost.form.ie</field>
+        <field name="model">stock.landed.cost</field>
+        <field name="inherit_id" ref="stock_landed_costs.view_stock_landed_cost_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]/label[@for='name']" position="attributes">
+                <attribute name="invisible">ie_import_order_id</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]/label[@for='name']" position="after">
+                <label for="name" string="LC Number" invisible="not ie_import_order_id"/>
+                <field name="ie_import_order_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//h1/field[@name='name']" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
+            </xpath>
+        </field>
+    </record>
     <record id="view_purchase_order_form_ie" model="ir.ui.view">
         <field name="name">purchase.order.form.ie</field>
         <field name="model">purchase.order</field>

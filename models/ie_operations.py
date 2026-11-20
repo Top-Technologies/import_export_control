@@ -105,10 +105,24 @@ class IeLc(models.Model):
             balance = lc._ie_dollar_balance()
             balance._ie_add_retention(sign * lc._ie_retention_amount(balance), lc.issue_date)
 
+    def _ie_sync_landed_cost_name(self):
+        """Keep each linked landed cost number equal to this letter of credit."""
+        if self.env.context.get('ie_skip_lc_sync'):
+            return
+        Landed = self.env['stock.landed.cost']
+        for lc in self.filtered('import_order_id'):
+            costs = Landed.search([
+                ('ie_import_order_id', '=', lc.import_order_id.id),
+                ('name', '!=', lc.name),
+            ])
+            if costs:
+                costs.with_context(ie_skip_lc_sync=True).write({'name': lc.name})
+
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
         records._ie_draw_dollar_balance(-1)
+        records._ie_sync_landed_cost_name()
         return records
 
     def write(self, vals):
@@ -118,6 +132,8 @@ class IeLc(models.Model):
         result = super().write(vals)
         if watched:
             self._ie_draw_dollar_balance(-1)
+        if 'name' in vals:
+            self._ie_sync_landed_cost_name()
         return result
 
     def unlink(self):
