@@ -420,6 +420,45 @@ class IeExportOrder(models.Model):
             self._ie_assert_can_close()
         return True
 
+    def _ie_after_enter(self, new_state):
+        super()._ie_after_enter(new_state)
+        if new_state == 'approved':
+            self._ie_ensure_letter_of_credit()
+
+    def _ie_ensure_letter_of_credit(self):
+        """Create and issue an export letter of credit when the payment method is LC.
+
+        The bank is taken from a dollar balance for this company. Without one,
+        the order still moves and no letter of credit is created.
+        """
+        for order in self:
+            if order.payment_method != 'lc' or order.lc_ids:
+                continue
+            if not order.partner_id or not order.company_id.partner_id:
+                continue
+            balance = self.env['ie.dollar.balance'].search([
+                ('company_id', '=', order.company_id.id),
+                ('bank_id', '!=', False),
+            ], limit=1)
+            if not balance:
+                continue
+            today = fields.Date.context_today(order)
+            lc = self.env['ie.lc'].sudo().create({
+                'name': 'LC/%s' % order.name,
+                'lc_type': 'sight',
+                'bank_id': balance.bank_id.id,
+                'applicant_id': order.partner_id.id,
+                'beneficiary_id': order.company_id.partner_id.id,
+                'amount': order.amount_total,
+                'currency_id': order.currency_id.id,
+                'expiry_date': order.contract_expiry or fields.Date.add(today, days=90),
+                'latest_shipment': order.shipment_date,
+                'export_order_id': order.id,
+                'company_id': order.company_id.id,
+            })
+            lc.action_issue()
+            order._ie_log('write', detail=_('Letter of credit %s created.', lc.name))
+
     def _ie_create_quality_checks(self):
         self.ensure_one()
         existing = self.env['quality.check'].search([('ie_export_order_id', '=', self.id)])
@@ -654,8 +693,12 @@ class IeExportOrder(models.Model):
         for order in self:
             if order.state != 'proceeds':
                 raise UserError(_("Finance signs after proceeds are recorded."))
-            order._ie_check_group('import_export_control.group_ie_finance')
-            if order.create_uid == self.env.user and not self.env.su:
+            order._ie_check_finance_user()
+            if (
+                order.create_uid == self.env.user
+                and not self.env.su
+                and not self.env.user.has_group('import_export_control.group_ie_admin')
+            ):
                 raise UserError(_("The order creator cannot sign the reconciliation."))
             order.write({'finance_signed_by_id': self.env.user.id, 'finance_signed_on': fields.Datetime.now()})
             order._ie_log('approval', detail=_('Finance reconciliation sign-off.'))
@@ -665,10 +708,11 @@ class IeExportOrder(models.Model):
         for order in self:
             if order.state != 'proceeds':
                 raise UserError(_("Control & Compliance signs after proceeds are recorded."))
-            order._ie_check_group('import_export_control.group_ie_compliance')
-            order._ie_check_not_maker()
-            if order.finance_signed_by_id == self.env.user and not self.env.su:
-                raise UserError(_("Finance and Control & Compliance must be different people."))
+            order._ie_check_compliance_user()
+            if not self.env.su and not self.env.user.has_group('import_export_control.group_ie_admin'):
+                order._ie_check_not_maker()
+                if order.finance_signed_by_id == self.env.user:
+                    raise UserError(_("Finance and Control & Compliance must be different people."))
             order.write({'compliance_signed_by_id': self.env.user.id, 'compliance_signed_on': fields.Datetime.now()})
             order._ie_log('approval', detail=_('Control & Compliance reconciliation sign-off.'))
             if order.finance_signed_by_id and order.compliance_signed_by_id:

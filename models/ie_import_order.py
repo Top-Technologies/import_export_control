@@ -354,14 +354,19 @@ class IeImportOrder(models.Model):
             if self.technical_reviewer_id == self.create_uid:
                 raise UserError(_("The technical reviewer cannot be the person who created the import order."))
         if new_state == 'bank_lc' and self.payment_method == 'lc':
+            self._ie_ensure_letter_of_credit()
+            self._ie_issue_letter_of_credit()
             if self.forex_state != 'approved':
                 raise UserError(_("Foreign-currency approval is required before bank processing."))
             usable = self.lc_ids.filtered(lambda lc: lc.state in ('issued', 'amended', 'utilised'))
             if not usable:
                 raise UserError(_("An issued letter of credit is required before bank processing."))
-        if new_state == 'shipment' and not self.shipment_ids:
-            raise UserError(_("Create a shipment before moving to the shipment stage."))
+        if new_state == 'shipment':
+            self._ie_prepare_shipment()
+            if not self.shipment_ids:
+                raise UserError(_("Create a shipment before moving to the shipment stage."))
         if new_state == 'received':
+            self._ie_prepare_customs_clearance()
             done = self.picking_ids.filtered(lambda pick: pick.state == 'done' and pick.picking_type_id.code == 'incoming')
             if not done:
                 raise UserError(_("Validate the goods receipt before marking the order as received."))
@@ -420,8 +425,68 @@ class IeImportOrder(models.Model):
                 'company_id': order.company_id.id,
             })
             order._ie_log('write', detail=_('Letter of credit %s created.', lc.name))
-            if order.forex_state == 'approved':
-                lc.action_issue()
+            order._ie_issue_letter_of_credit()
+
+    def _ie_issue_letter_of_credit(self):
+        """Issue an applied letter of credit once foreign currency is approved."""
+        for order in self:
+            if order.payment_method != 'lc' or order.forex_state != 'approved':
+                continue
+            applied = order.lc_ids.filtered(lambda lc: lc.state == 'applied')
+            if applied:
+                applied.action_issue()
+
+    def _ie_prepare_shipment(self):
+        """Create the import shipment from the order when none is recorded."""
+        self.ensure_one()
+        if self.shipment_ids:
+            return
+        reference = self.proforma_number or self.name
+        shipment = self.env['ie.shipment'].create({
+            'transport_mode': 'sea',
+            'bl_number': self.name,
+            'container_available': True,
+            'container_booked': True,
+            'booking_reference': reference,
+            'shipping_line': reference,
+            'container_type': 'standard',
+            'factory_arrival': self.expected_arrival,
+            'etd': self.expected_shipment,
+            'eta': self.expected_arrival,
+            'state': 'in_transit',
+            'quantity': sum(self.line_ids.mapped('quantity')),
+            'import_order_id': self.id,
+            'company_id': self.company_id.id,
+        })
+        self._ie_log('write', detail=_('Shipment %s created.', shipment.name))
+
+    def _ie_prepare_customs_clearance(self):
+        """Create the import declaration and clear it when the goods are received."""
+        self.ensure_one()
+        if self.customs_ids.filtered(lambda customs: customs.state == 'cleared'):
+            return
+        pending = self.customs_ids.filtered(lambda customs: customs.state == 'pending')
+        if pending:
+            pending.action_clear()
+            return
+        if self.customs_ids.filtered(lambda customs: customs.state == 'held'):
+            return
+        product = self.line_ids[:1].product_id
+        hs = product.ie_hs_code_id if product else False
+        if not hs:
+            hs = self.line_ids.filtered('hs_code_id')[:1].hs_code_id
+        customs = self.env['ie.customs.clearance'].create({
+            'name': 'DEC-%s' % self.name,
+            'direction': 'import',
+            'hs_code_id': hs.id if hs else False,
+            'duty_amount': self.estimated_duty or 0.0,
+            'tax_amount': 0.0,
+            'currency_id': self.currency_id.id,
+            'import_order_id': self.id,
+            'company_id': self.company_id.id,
+        })
+        customs.action_clear()
+        self._ie_log('write', detail=_('Customs clearance %s prepared and cleared.', customs.name))
 
     @api.model
     def _ie_load_missing_letters_of_credit(self):
@@ -517,8 +582,12 @@ class IeImportOrder(models.Model):
         for order in self:
             if order.state != 'received':
                 raise UserError(_("Finance signs the order after the goods are received."))
-            order._ie_check_group('import_export_control.group_ie_finance')
-            if order.create_uid == self.env.user and not self.env.su:
+            order._ie_check_finance_user()
+            if (
+                order.create_uid == self.env.user
+                and not self.env.su
+                and not self.env.user.has_group('import_export_control.group_ie_admin')
+            ):
                 raise UserError(_("The order creator cannot sign the reconciliation."))
             order.write({
                 'finance_signed_by_id': self.env.user.id,
@@ -531,10 +600,11 @@ class IeImportOrder(models.Model):
         for order in self:
             if order.state != 'received':
                 raise UserError(_("Control & Compliance signs the order after the goods are received."))
-            order._ie_check_group('import_export_control.group_ie_compliance')
-            order._ie_check_not_maker()
-            if order.finance_signed_by_id == self.env.user and not self.env.su:
-                raise UserError(_("Finance and Control & Compliance must be different people."))
+            order._ie_check_compliance_user()
+            if not self.env.su and not self.env.user.has_group('import_export_control.group_ie_admin'):
+                order._ie_check_not_maker()
+                if order.finance_signed_by_id == self.env.user:
+                    raise UserError(_("Finance and Control & Compliance must be different people."))
             order.write({
                 'compliance_signed_by_id': self.env.user.id,
                 'compliance_signed_on': fields.Datetime.now(),

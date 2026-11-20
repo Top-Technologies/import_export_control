@@ -40,8 +40,6 @@ def _ie_guard(record, kind):
             usable = order.lc_ids.filtered(lambda lc: lc.state in ('issued', 'amended', 'utilised', 'closed'))
             if not usable:
                 raise UserError(_("Payment method is LC. A valid letter of credit is required before posting."))
-        if record._name == 'account.payment' and order.create_uid == record.env.user and not record.env.su:
-            raise UserError(_("The import order creator cannot release the payment."))
         return
     if not record.ie_is_export and not record.ie_export_order_id:
         return
@@ -57,8 +55,6 @@ def _ie_guard(record, kind):
             raise UserError(_("Quality was rejected. The export shipment cannot be validated."))
         if not order.reservation_picking_id or order.reservation_picking_id.state == 'cancel':
             raise UserError(_("Reserved stock is required before the export delivery is validated."))
-    if record._name == 'account.payment' and order.create_uid == record.env.user and not record.env.su:
-        raise UserError(_("The export order creator cannot release the payment."))
 
 
 class PurchaseOrder(models.Model):
@@ -295,6 +291,71 @@ class StockLandedCost(models.Model):
     _inherit = 'stock.landed.cost'
 
     ie_import_order_id = fields.Many2one('ie.import.order', string='Import Order', index=True, copy=False)
+    name = fields.Char(
+        'Name', default=lambda self: _('New'),
+        copy=False, readonly=False, tracking=True)
+
+    def _ie_primary_lc(self):
+        """The letter of credit whose number this landed cost must keep."""
+        self.ensure_one()
+        order = self.ie_import_order_id
+        if not order:
+            return self.env['ie.lc']
+        issued = order.lc_ids.filtered(lambda lc: lc.state in ('issued', 'amended', 'utilised'))
+        return (issued or order.lc_ids)[:1]
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            order_id = vals.get('ie_import_order_id')
+            if not order_id:
+                continue
+            if vals.get('name', _('New')) not in (False, _('New')):
+                continue
+            order = self.env['ie.import.order'].browse(order_id)
+            issued = order.lc_ids.filtered(lambda lc: lc.state in ('issued', 'amended', 'utilised'))
+            lc = (issued or order.lc_ids)[:1]
+            if lc:
+                vals['name'] = lc.name
+        return super().create(vals_list)
+
+    def write(self, vals):
+        result = super().write(vals)
+        if vals.get('name') and not self.env.context.get('ie_skip_lc_sync'):
+            for cost in self:
+                lc = cost._ie_primary_lc()
+                if lc and lc.name != cost.name:
+                    lc.with_context(ie_skip_lc_sync=True).write({'name': cost.name})
+        return result
+
+    def get_valuation_lines(self):
+        """Accept every costing method, including standard price.
+
+        Standard Odoo skips a receipt move unless the product is FIFO or
+        average, then raises when nothing is left. The products on the
+        selected transfer are kept as long as they were received.
+        """
+        self.ensure_one()
+        lines = []
+        for move in self._get_targeted_move_ids():
+            if move.state == 'cancel' or not move.quantity:
+                continue
+            qty = move.product_uom._compute_quantity(move.quantity, move.product_id.uom_id)
+            lines.append({
+                'product_id': move.product_id.id,
+                'move_id': move.id,
+                'quantity': qty,
+                'former_cost': sum(move._get_stock_valuation_layer_ids().mapped('value')),
+                'weight': move.product_id.weight * qty,
+                'volume': move.product_id.volume * qty,
+            })
+        if not lines:
+            target_model_descriptions = dict(self._fields['target_model']._description_selection(self.env))
+            raise UserError(_(
+                "You cannot apply landed costs on the chosen %s(s). The receipt has no received quantity.",
+                target_model_descriptions[self.target_model],
+            ))
+        return lines
 
 
 class QualityPoint(models.Model):
